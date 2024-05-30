@@ -1,0 +1,24 @@
+﻿@model dynamic
+
+@{
+    ViewBag.Title = "Console d'administration";
+    Layout = "_Layout";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center">Console d'administration</h2>
+    <div class="list-group mt-4">
+        <a asp-controller="Admin" asp-action="Users" class="list-group-item list-group-item-action">
+            Gestion des utilisateurs
+        </a>
+        <a asp-controller="Admin" asp-action="Artists" class="list-group-item list-group-item-action">
+            Gestion des artistes
+        </a>
+        <a asp-controller="Admin" asp-action="Meals" class="list-group-item list-group-item-action">
+            Gestion des repas
+        </a>
+        <a asp-controller="Admin" asp-action="RoomInfo" class="list-group-item list-group-item-action">
+            Gestion des infos de la salle
+        </a>
+    </div>
+</div>

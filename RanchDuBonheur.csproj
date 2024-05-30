@@ -35,17 +35,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <_ContentIncludedByDefault Remove="Views\Admin\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Artists\Index.cshtml" />
     <_ContentIncludedByDefault Remove="Views\Salle\Index.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
     <UpToDateCheckInput Remove="Views\Salle\Index.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\Admin\Index.cshtml" />
   </ItemGroup>
 
 </Project>
