@@ -117,5 +117,32 @@ namespace RanchDuBonheur.Controllers
             return RedirectToAction("Users");
         }
 
+        [HttpPost]
+        [Route("add-user")]
+        public async Task<IActionResult> AddUser(string userName, string email, string password)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(email);
+            if (existingUser != null)
+            {
+                TempData["Error"] = "L'email est déjà utilisé par un autre compte.";
+                return RedirectToAction("Users");
+            }
+
+            var user = new IdentityUser { UserName = userName, Email = email };
+            var result = await _userManager.CreateAsync(user, password);
+            if (result.Succeeded)
+            {
+                TempData["Success"] = "Utilisateur ajouté avec succès.";
+                return RedirectToAction("Users");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                TempData["Error"] = error.Description;
+            }
+            return RedirectToAction("Users");
+        }
+
+
     }
 }
