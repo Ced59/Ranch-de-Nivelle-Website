@@ -15,6 +15,8 @@ body {
     background-color: #FFF1D6;
     color: #593815;
     font-family: 'Open Sans', sans-serif;
+    padding-bottom: 100px;
+    padding-top: 100px;
 }
 
 /* Navbar Styles */
@@ -133,5 +135,33 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
 .privacy, .privacy a {
     color: black;
     text-decoration: none;
+}
+
+.home-img {
+    max-width: 90%;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    display: block; 
+    margin: 0 auto; 
+}
+
+.info-text {
+    font-size: 1.25rem;
+}
+
+.phone-number {
+    font-size: 1.5rem;
+    margin-top: 5px;
+}
+
+    .phone-number a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+.justified-text {
+    text-align: justify;
+    text-indent: 60px; 
 }
 

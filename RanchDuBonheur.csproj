@@ -25,7 +25,27 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\Informations\" />
     <Folder Include="wwwroot\images\logo\" />
+    <Folder Include="wwwroot\images\home\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Artists\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\Admin\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Artists\Index.cshtml" />
+    <_ContentIncludedByDefault Remove="Views\Salle\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Salle\Index.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <UpToDateCheckInput Remove="Views\Admin\Index.cshtml" />
   </ItemGroup>
 
 </Project>
