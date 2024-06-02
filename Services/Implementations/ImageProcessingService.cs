@@ -12,16 +12,21 @@ namespace RanchDuBonheur.Services.Implementations
         public async Task<string> ResizeAndCompressImageAsync(string filePath, int maxFileSizeInKb, int maxWidth = 1920, int maxHeight = 1080, int minDimension = 600)
         {
             using var image = await Image.LoadAsync(filePath);
+
+            var fileInfo = new FileInfo(filePath);
+            if (fileInfo.Length < maxFileSizeInKb * 1024)
+            {
+                return filePath;
+            }
+
             bool needSave = false;
 
-            // Redimensionnement initial si nécessaire
             if (image.Width > maxWidth || image.Height > maxHeight)
             {
                 image.Mutate(x => x.Resize(maxWidth, maxHeight));
                 needSave = true;
             }
 
-            // Compression par paliers de qualité
             int quality = 90;
             while (true)
             {
@@ -42,10 +47,8 @@ namespace RanchDuBonheur.Services.Implementations
                     throw new Exception("Cannot compress image to the desired size.");
                 }
 
-                // Réduction progressive de la qualité
                 quality -= 10;
 
-                // Réduction progressive des dimensions si qualité très faible
                 if (quality <= 50)
                 {
                     int newWidth = (int)(image.Width * 0.75);
@@ -59,11 +62,29 @@ namespace RanchDuBonheur.Services.Implementations
             }
         }
 
-        public void DeleteFile(string filePath)
+        public bool DeletePhoto(string photoUrl)
         {
-            if (File.Exists(filePath))
+            // Suppression du préfixe `/images/` pour obtenir un chemin correct dans `wwwroot`
+            var localPath = photoUrl.StartsWith('/') ? photoUrl.Substring(1) : photoUrl;
+            var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", localPath);
+
+            return DeleteFile(fullPath);
+        }
+
+        public bool DeleteFile(string filePath)
+        {
+            try
             {
-                File.Delete(filePath);
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
     }

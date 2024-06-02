@@ -46,7 +46,7 @@ namespace RanchDuBonheur.Services.Implementations
             var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", photoUrl);
             try
             {
-                _imageProcessingService.DeleteFile(fullPath);
+                _imageProcessingService.DeletePhoto(fullPath);
                 return true;
             }
             catch (Exception)
