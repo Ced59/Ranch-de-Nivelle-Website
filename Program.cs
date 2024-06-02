@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
+using RanchDuBonheur.Services.Implementations;
+using RanchDuBonheur.Services.Interfaces;
 
 namespace RanchDuBonheur
 {
@@ -35,6 +37,9 @@ namespace RanchDuBonheur
             {
                 options.LowercaseUrls = true;
             });
+
+            builder.Services.AddScoped<ImageProcessingService>();
+            builder.Services.AddScoped<IPhotoService, PhotoService>();
 
             var app = builder.Build();
 

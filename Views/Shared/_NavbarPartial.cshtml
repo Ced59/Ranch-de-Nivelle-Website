@@ -25,7 +25,7 @@
                 <li class="nav-item m-2">
                     <a class="nav-link text-dark" asp-area="" asp-controller="Informations" asp-action="Index">Infos Utiles</a>
                 </li>
-                @if (User.Identity.IsAuthenticated)
+                @if (User!.Identity!.IsAuthenticated)
                 {
                     <li class="nav-item m-2">
                         <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AdminIndex">Administration</a>
