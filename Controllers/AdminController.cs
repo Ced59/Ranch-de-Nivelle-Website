@@ -155,10 +155,43 @@ namespace RanchDuBonheur.Controllers
 
         [HttpPost]
         [Route("edit-artist/{id}")]
-        public async Task<IActionResult> EditArtist(string id, IFormFile photo)
+        public async Task<IActionResult> EditArtist(Guid id, string name, string description, IFormFile photo)
         {
+            var artist = await _context.Artists.FindAsync(id);
+            if (artist == null)
+            {
+                TempData["Error"] = "Artiste non trouvé.";
+                return RedirectToAction("Artists");
+            }
+
+            artist.Name = name;
+            artist.Description = description;
+
+            if (photo != null && photo.Length > 0)
+            {
+                if (!string.IsNullOrWhiteSpace(artist.PhotoUrl))
+                {
+                    _photoService.DeletePhoto(artist.PhotoUrl);
+                }
+
+                var photoResult = await _photoService.UploadPhotoAsync(name, photo, "artists");
+                if (photoResult.IsSuccess)
+                {
+                    artist.PhotoUrl = photoResult.PhotoPath;
+                }
+                else
+                {
+                    TempData["Error"] = "Échec de l'upload de la photo.";
+                    return RedirectToAction("Artists"); 
+                }
+            }
+
+            _context.Artists.Update(artist);
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Artiste modifié avec succès.";
             return RedirectToAction("Artists");
         }
+
 
         [HttpPost]
         [Route("delete-artist/{id}")]
