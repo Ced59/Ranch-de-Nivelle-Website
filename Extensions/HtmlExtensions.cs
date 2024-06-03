@@ -5,15 +5,13 @@ namespace RanchDuBonheur.Extensions
 {
     public static class HtmlExtensions
     {
-        public static HtmlString FormatWithLineBreaks(this IHtmlHelper htmlHelper, string text)
+        public static IHtmlContent FormatWithLineBreaks(this IHtmlHelper htmlHelper, string text)
         {
             if (string.IsNullOrEmpty(text))
                 return new HtmlString(text);
 
-            var formatted = text.Replace("\r\n", "<br />").Replace("\n", "<br />");
-
-            var encoded = htmlHelper.Encode(formatted);
-
+            var encoded = htmlHelper.Encode(text);
+            var formatted = encoded.Replace(htmlHelper.Encode("\r\n"), "<br />").Replace(htmlHelper.Encode("\n"), "<br />");
 
             return new HtmlString(formatted);
         }
