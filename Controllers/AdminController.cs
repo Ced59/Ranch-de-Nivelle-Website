@@ -51,6 +51,7 @@ namespace RanchDuBonheur.Controllers
         [Route("repas")]
         public IActionResult Meals()
         {
+
             return View();
         }
 
