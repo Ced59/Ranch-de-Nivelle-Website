@@ -1,8 +1,38 @@
-﻿@model dynamic
+﻿@using RanchDuBonheur.Extensions
+@model List<RanchDuBonheur.Models.Pocos.Artist>
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Les Artistes du Ranch";
     Layout = "_Layout";
 }
 
-<h2>title</h2>
+<div class="container">
+    <h1 class="my-4 text-center">Les artistes du Ranch</h1>
+
+    @if (Model.Count > 0)
+    {
+        <div class="row row-cols-1 row-cols-md-4 g-4 mt-4">
+            @foreach (var artist in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-3 rounded cards-color">
+                        <a asp-controller="Artists" asp-action="Artist" asp-route-id="@artist.Id" class="stretched-link text-decoration-none">
+                            @if (!string.IsNullOrWhiteSpace(artist.PhotoUrl))
+                            {
+                                <img src="@artist.PhotoUrl" class="card-img-top aspect-ratio aspect-16x9" alt="Image de l'artiste">
+                            }
+                            <div class="card-body mt-3">
+                                <h5 class="card-title text-center text-card-color">@artist.Name</h5>
+                                <p class="card-text mt-4 text-card-color">@Html.FormatMaxCharacters(artist.Description, 300)</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="mt-4">Aucun artiste n'est actuellement enregistré.</p>
+    }
+</div>

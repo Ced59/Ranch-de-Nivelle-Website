@@ -165,3 +165,27 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
     text-indent: 60px; 
 }
 
+.cards-color {
+    background-color: #F0E4C7;
+}
+
+.text-card-color {
+    color: #593815;
+}
+
+.card:hover {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    transform: scale(1.05);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.card-img-top {
+    object-fit: cover;
+    height: 200px;
+}
+
+@media (max-width: 765px) {
+    .card-img-top {
+        height: auto; /* Allow image to retain its original height */
+    }
+}
