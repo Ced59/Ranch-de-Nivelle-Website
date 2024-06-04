@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RanchDuBonheur.Models.Pocos
+namespace RanchDuBonheur.Models.Pocos.Artists
 {
     public class Artist
     {

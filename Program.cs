@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
+using RanchDuBonheur.Init;
 using RanchDuBonheur.Services.Implementations;
 using RanchDuBonheur.Services.Interfaces;
 
@@ -66,6 +67,8 @@ namespace RanchDuBonheur
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
+
+            ApplicationDbInitializer.SeedUsers(userManager, configuration).Wait();
 
             app.Run();
         }

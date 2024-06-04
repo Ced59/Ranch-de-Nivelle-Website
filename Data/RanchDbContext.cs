@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using RanchDuBonheur.Models.Pocos;
+using RanchDuBonheur.Models.Pocos.Artists;
 
 namespace RanchDuBonheur.Data
 {
