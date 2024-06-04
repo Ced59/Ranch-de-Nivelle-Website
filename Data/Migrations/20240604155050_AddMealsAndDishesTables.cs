@@ -131,15 +131,6 @@ namespace RanchDuBonheur.Data.Migrations
             migrationBuilder.DropTable(
                 name: "Meals");
 
-            migrationBuilder.AlterColumn<string>(
-                name: "Description",
-                table: "Artists",
-                type: "nvarchar(1000)",
-                maxLength: 1000,
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(10000)",
-                oldMaxLength: 10000);
         }
     }
 }

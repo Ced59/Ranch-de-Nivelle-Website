@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using RanchDuBonheur.Data;
 using RanchDuBonheur.Init;
 using RanchDuBonheur.Services.Implementations;
@@ -20,17 +21,17 @@ namespace RanchDuBonheur
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options =>
-                {
-                    options.SignIn.RequireConfirmedAccount = true;
-                    options.User.RequireUniqueEmail = true;
-                })
+            {
+                options.SignIn.RequireConfirmedAccount = true;
+                options.User.RequireUniqueEmail = true;
+            })
                 .AddEntityFrameworkStores<RanchDbContext>();
             builder.Services.AddControllersWithViews();
 
             builder.Services.ConfigureApplicationCookie(options =>
             {
-                options.LoginPath = "/Identity/Account/Login"; 
-                options.AccessDeniedPath = "/Identity/Account/AccessDenied"; 
+                options.LoginPath = "/Identity/Account/Login";
+                options.AccessDeniedPath = "/Identity/Account/AccessDenied";
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
             });
 
@@ -52,7 +53,6 @@ namespace RanchDuBonheur
             else
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -68,7 +68,22 @@ namespace RanchDuBonheur
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
-            //ApplicationDbInitializer.SeedUsers(userManager, configuration).Wait();
+            // Ensure the database is created
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                try
+                {
+                    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+                    var configuration = services.GetRequiredService<IConfiguration>();
+                    ApplicationDbInitializer.SeedUsers(userManager, configuration).Wait();
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while seeding the database.");
+                }
+            }
 
             app.Run();
         }

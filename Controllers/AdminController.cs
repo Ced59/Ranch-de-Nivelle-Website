@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
 using RanchDuBonheur.Models.Pocos;
 using RanchDuBonheur.Models.Pocos.Artists;
+using RanchDuBonheur.Models.Pocos.Meals;
+using RanchDuBonheur.Models.ViewModels;
 using RanchDuBonheur.Services.Implementations;
 using RanchDuBonheur.Services.Interfaces;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -50,11 +52,51 @@ namespace RanchDuBonheur.Controllers
         }
 
         [Route("repas")]
-        public IActionResult Meals()
+        public async Task<IActionResult> Meals()
         {
+            var meals = await _context.Meals.ToListAsync();
 
-            return View();
+            return View(meals);
         }
+
+        [Route("add")]
+        public async Task<IActionResult> AddMeal()
+        {
+            var artists = await _context.Artists.ToListAsync();
+            var dishes = await _context.Dishes.ToListAsync();
+            var newMeal = new Meal
+            {
+                Date = DateOnly.FromDateTime(DateTime.Now)
+            };
+
+            var viewModel = new AdminMealsGestionViewModel
+            {
+                Artists = artists,
+                Dishes = dishes,
+                NewMeal = newMeal
+            };
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> AddMealAction(AdminMealsGestionViewModel model)
+        {
+            if (model.NewMeal.Date < DateOnly.FromDateTime(DateTime.Now))
+            {
+                ModelState.AddModelError("NewMeal.Date", "La date doit être aujourd'hui ou une date future.");
+            }
+
+            if (ModelState.IsValid)
+            {
+                // Logique de sauvegarde du repas
+                return RedirectToAction("Meals");
+            }
+            // Recharger les dépendances nécessaires pour le modèle
+            model.Artists = await _context.Artists.ToListAsync();
+            model.Dishes = await _context.Dishes.ToListAsync();
+            return View("AddMeal", model); // Assurez-vous que le nom de la vue est correct
+        }
+
 
         [Route("infos-salle")]
         public IActionResult RoomInfo()
@@ -277,6 +319,5 @@ namespace RanchDuBonheur.Controllers
 
             return RedirectToAction("Artists");
         }
-
     }
 }

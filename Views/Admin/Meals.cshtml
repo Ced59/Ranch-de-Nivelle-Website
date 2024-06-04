@@ -1,3 +1,58 @@
-﻿@{
+﻿@model List<RanchDuBonheur.Models.Pocos.Meals.Meal>
+
+@{
     ViewData["Title"] = "Gestion des repas";
+    var meals = Model;
 }
+
+<div class="container text-center">
+
+
+    <h2 class="text-center">Gestion des repas</h2>
+
+    @if (meals.Count == 0)
+    {
+        <p class="text-center mt-4">Aucun repas n'est actuellement enregistré.</p>
+    }
+    else
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <table class="table table-striped table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th class="text-center align-middle">ID</th>
+                            <th class="text-center align-middle">Date</th>
+                            <th class="text-center align-middle">Prix</th>
+                            <th class="text-center align-middle">Commentaires</th>
+                            <th class="text-center align-middle">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var meal in meals)
+                        {
+                            <tr>
+                                <td class="align-middle">@meal.Id</td>
+                                <td class="align-middle">@meal.Date</td>
+                                <td class="align-middle">@meal.Price</td>
+                                <td class="align-middle">@meal.Commentaires</td>
+                                <td>
+                                    <a href="#" class="btn btn-primary">Modifier</a>
+                                    <a href="#" class="btn btn-danger">Supprimer</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+    <a asp-controller="Admin" asp-action="AddMeal">
+        <button type="button" class="btn btn-success mt-4">
+            Ajouter un repas
+        </button>
+    </a>
+
+
+</div>

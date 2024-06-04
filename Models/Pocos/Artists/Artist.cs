@@ -10,7 +10,7 @@ namespace RanchDuBonheur.Models.Pocos.Artists
         [MaxLength(100)]
         public string Name { get; set; } = "";
 
-        [MaxLength(10000)]
+        [MaxLength(2500)]
         public string Description { get; set; } = "";
 
         [MaxLength(255)]
