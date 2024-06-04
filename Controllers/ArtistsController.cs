@@ -4,6 +4,7 @@ using RanchDuBonheur.Data;
 
 namespace RanchDuBonheur.Controllers
 {
+    [Route("artistes")]
     public class ArtistsController : Controller
     {
         private readonly RanchDbContext _context;
@@ -13,6 +14,7 @@ namespace RanchDuBonheur.Controllers
             _context = context;
         }
 
+        [Route("accueil")]
         public async Task<IActionResult> Index()
         {
             var artists = await _context.Artists.ToListAsync();
@@ -20,9 +22,26 @@ namespace RanchDuBonheur.Controllers
             return View(artists);
         }
 
-        public async Task<IActionResult> Artist()
+
+        [Route("detail")]
+        public async Task<IActionResult> Artist(string id)
         {
-            return View();
+            if (Guid.TryParse(id, out Guid artistId))
+            {
+                var artist = await _context.Artists.SingleOrDefaultAsync(artist => artist.Id == artistId);
+                if (artist == null)
+                {
+                    TempData["Error"] = "Artiste non trouvé";
+                    return RedirectToAction("Index");
+                }
+                return View(artist);
+            }
+            else
+            {
+                TempData["Error"] = "Requête invalide";
+                return RedirectToAction("Index");
+            }
         }
+
     }
 }

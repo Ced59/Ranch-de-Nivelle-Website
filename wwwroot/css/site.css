@@ -179,6 +179,11 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
+.card.no-hover-effect:hover {
+    transform: none;
+    box-shadow: none;
+}
+
 .card-img-top {
     object-fit: cover;
     height: 200px;

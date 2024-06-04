@@ -1,5 +1,33 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using RanchDuBonheur.Extensions
+@model RanchDuBonheur.Models.Pocos.Artist
+
 @{
+    ViewBag.Title = @Model.Name;
+    Layout = "_Layout";
+    var artist = Model;
 }
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card mt-4 cards-color no-hover-effect">
+                <div class="card-header text-center">
+                    <h1>@artist.Name</h1>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 p-1 rounded d-flex align-items-center">
+                            <img src="@artist.PhotoUrl" alt="Photo de @artist.Name" class="img-fluid mx-auto">
+                        </div>
+                        <div class="col-md-8 p-4 justified-text">
+                            <p>@Html.FormatWithLineBreaks(artist.Description)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a href="@Url.Action("Index", "Artists")" class="btn btn-primary">Retour</a>
+            </div>
+        </div>
+    </div>
+</div>

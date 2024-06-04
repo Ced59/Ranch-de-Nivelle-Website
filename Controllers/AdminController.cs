@@ -142,16 +142,28 @@ namespace RanchDuBonheur.Controllers
             var result = await _userManager.CreateAsync(user, password);
             if (result.Succeeded)
             {
-                TempData["Success"] = "Utilisateur ajouté avec succès.";
-                return RedirectToAction("Users");
+                // Confirmer directement l'email de l'utilisateur
+                var confirmEmailResult = await _userManager.ConfirmEmailAsync(user, await _userManager.GenerateEmailConfirmationTokenAsync(user));
+                if (confirmEmailResult.Succeeded)
+                {
+                    TempData["Success"] = "Utilisateur ajouté avec succès.";
+                    return RedirectToAction("Users");
+                }
+                else
+                {
+                    TempData["Error"] = "Erreur lors de la confirmation de l'e-mail.";
+                    foreach (var error in confirmEmailResult.Errors)
+                    {
+                        TempData["Error"] += " " + error.Description;
+                    }
+                    return RedirectToAction("Users");
+                }
             }
 
-            foreach (var error in result.Errors)
-            {
-                TempData["Error"] = error.Description;
-            }
+            TempData["Error"] = string.Join(" ", result.Errors.Select(e => e.Description));
             return RedirectToAction("Users");
         }
+
 
         [HttpPost]
         [Route("edit-artist/{id}")]
