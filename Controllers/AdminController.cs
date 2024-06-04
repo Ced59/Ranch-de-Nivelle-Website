@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
 using RanchDuBonheur.Models.Pocos;
+using RanchDuBonheur.Models.Pocos.Artists;
 using RanchDuBonheur.Services.Implementations;
 using RanchDuBonheur.Services.Interfaces;
 using static System.Runtime.InteropServices.JavaScript.JSType;

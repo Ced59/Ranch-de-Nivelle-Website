@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using RanchDuBonheur.Models.Pocos.Meals;
+using System.ComponentModel.DataAnnotations;
 
 namespace RanchDuBonheur.Models.Pocos.Artists
 {
@@ -9,10 +10,12 @@ namespace RanchDuBonheur.Models.Pocos.Artists
         [MaxLength(100)]
         public string Name { get; set; } = "";
 
-        [MaxLength(1000)]
+        [MaxLength(10000)]
         public string Description { get; set; } = "";
 
         [MaxLength(255)]
         public string PhotoUrl { get; set; } = "";
+
+        public ICollection<MealArtist> MealArtists { get; set; } = new List<MealArtist>();
     }
 }

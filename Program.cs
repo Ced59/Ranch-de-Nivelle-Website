@@ -68,7 +68,7 @@ namespace RanchDuBonheur
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
-            ApplicationDbInitializer.SeedUsers(userManager, configuration).Wait();
+            //ApplicationDbInitializer.SeedUsers(userManager, configuration).Wait();
 
             app.Run();
         }
