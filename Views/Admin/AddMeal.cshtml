@@ -17,17 +17,17 @@
         <form asp-action="AddMealAction" class="d-flex flex-column h-100">
             <div>
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
+                <div class="form-group mt-sm-3 mt-md-0">
                     <label asp-for="@newMeal.Date" class="control-label"></label>
                     <input asp-for="@newMeal.Date" class="form-control" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
                     <span asp-validation-for="@newMeal.Date" class="text-danger"></span>
                 </div>
-                <div class="form-group">
+                <div class="form-group mt-sm-3 mt-md-0">
                     <label asp-for="@newMeal.Price" class="control-label">Prix</label>
                     <input asp-for="@newMeal.Price" class="form-control" />
                     <span asp-validation-for="@newMeal.Price" class="text-danger"></span>
                 </div>
-                <div class="form-group">
+                <div class="form-group mt-sm-3 mt-md-0">
                     <label asp-for="@newMeal.Commentaires" class="control-label"></label>
                     <textarea asp-for="@newMeal.Commentaires" class="form-control" style="height: 200px;"></textarea>
                     <span asp-validation-for="@newMeal.Commentaires" class="text-danger"></span>
@@ -39,7 +39,7 @@
         </form>
     </div>
     <div class="col-md-4 d-flex flex-column">
-        <div class="form-group flex-grow-1">
+        <div class="form-group flex-grow-1 mt-sm-4 mt-md-0">
             <label for="artistSelect">Sélectionnez les artistes:</label>
             <select asp-for="@newMeal.MealArtists" asp-items="@(new SelectList(@artists, "Id", "Name"))" class="form-control" style="height: calc(200px + 125px);" multiple="multiple">
             </select>
@@ -49,19 +49,22 @@
         </div>
     </div>
     <div class="col-md-4 d-flex flex-column">
-        <div class="form-group flex-grow-1">
+        <div class="form-group flex-grow-1 mt-sm-3 mt-md-0">
             <label for="dishSelect">Sélectionnez les plats:</label>
             <select asp-for="@newMeal.MealDishes" asp-items="@(new SelectList(@dishes, "Id", "Name"))" class="form-control" style="height: calc(200px + 125px);" multiple="multiple">
             </select>
         </div>
-        <div class="form-group mt-3">
+        <div class="form-group mt-3 d-flex justify-content-between">
             <input type="submit" value="Assigner Plats" class="btn btn-primary" />
+            <input type="submit" value="Ajouter nouveau plat" class="btn btn-primary" />
         </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Meals">Back to List</a>
+<div class="mt-5 d-flex justify-content-center">
+    <a asp-action="Meals">
+        <input type="submit" value="Retour" class="btn btn-primary" />
+    </a>
 </div>
 
 @section Scripts {
