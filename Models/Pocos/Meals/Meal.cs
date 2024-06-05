@@ -10,7 +10,7 @@ namespace RanchDuBonheur.Models.Pocos.Meals
         public decimal Price { get; set; }
 
         [MaxLength(2500)]
-        public string Commentaires { get; set; } = "";
+        public string? Commentaires { get; set; }
         public ICollection<MealDish> MealDishes { get; set; } = new List<MealDish>();
         public ICollection<MealArtist> MealArtists { get; set; } = new List<MealArtist>();
     }
