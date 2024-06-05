@@ -199,6 +199,9 @@ namespace RanchDuBonheur.Controllers
             if (dishExists)
             {
                 TempData["Error"] = "Un plat avec ce nom existe déjà.";
+
+                model = await RebuildViewModel(model);
+
                 return View("AddMeal", model);
             }
 
