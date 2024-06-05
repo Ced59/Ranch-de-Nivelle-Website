@@ -88,19 +88,137 @@ namespace RanchDuBonheur.Controllers
 
             if (ModelState.IsValid)
             {
-                // Logique de sauvegarde du repas
+                // Création et configuration du repas
+                var meal = new Meal
+                {
+                    Date = model.NewMeal.Date,
+                    Price = model.NewMeal.Price,
+                    Commentaires = model.NewMeal.Commentaires
+                };
+
+                // Ajouter le repas à la base de données
+                _context.Meals.Add(meal);
+                await _context.SaveChangesAsync();
+
+                // Enregistrer les relations avec les artistes assignés
+                foreach (var artistId in model.AssignedArtistIds)
+                {
+                    var mealArtist = new MealArtist
+                    {
+                        MealId = meal.Id,
+                        ArtistId = artistId
+                    };
+                    _context.MealArtists.Add(mealArtist);
+                }
+
+                // Enregistrer les relations avec les plats assignés
+                foreach (var dishId in model.AssignedDishIds)
+                {
+                    var mealDish = new MealDish
+                    {
+                        MealId = meal.Id,
+                        DishId = dishId
+                    };
+                    _context.MealDishes.Add(mealDish);
+                }
+
+                // Sauvegarde des changements dans la base de données
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Repas ajouté avec succès.";
                 return RedirectToAction("Meals");
             }
-            // Recharger les dépendances nécessaires pour le modèle
+
+            // Recharger les dépendances nécessaires pour le modèle si le ModelState n'est pas valide
             model.Artists = await _context.Artists.ToListAsync();
             model.Dishes = await _context.Dishes.ToListAsync();
-            var newMeal = new Meal
+            model.NewMeal = new Meal
             {
                 Date = DateOnly.FromDateTime(DateTime.Now)
             };
-            model.NewMeal = newMeal;
-            return View("AddMeal", model); // Assurez-vous que le nom de la vue est correct
+
+            return View("AddMeal", model);
         }
+
+
+        [HttpPost]
+        [Route("assign-dish")]
+        public async Task<IActionResult> AssignDish(AdminMealsGestionViewModel model, List<Guid> newAssignedDishIds)
+        {
+            // Récupération des IDs déjà assignés et ajout des nouveaux
+            var currentAssignedDishIds = model.AssignedDishIds ?? new List<Guid>();
+            currentAssignedDishIds.AddRange(newAssignedDishIds.Distinct());
+            model.AssignedDishIds = currentAssignedDishIds.Distinct().ToList();
+
+            model = await RebuildViewModel(model);
+            return View("AddMeal", model);
+        }
+
+        [HttpPost]
+        [Route("unassign-dish")]
+        public async Task<IActionResult> UnassignDish(Guid dishId, AdminMealsGestionViewModel model)
+        {
+            model.AssignedDishIds.Remove(dishId);
+            model = await RebuildViewModel(model);
+
+            return View("AddMeal", model);
+        }
+
+        [HttpPost]
+        [Route("assign-artists")]
+        public async Task<IActionResult> AssignArtists(AdminMealsGestionViewModel model, List<Guid> newAssignedArtistIds)
+        {
+            // Ajouter les nouveaux IDs sans perdre les anciens
+            model.AssignedArtistIds.AddRange(newAssignedArtistIds);
+            model.AssignedArtistIds = model.AssignedArtistIds.Distinct().ToList();
+
+            // Recharger le modèle complet
+            model = await RebuildViewModel(model);
+
+            TempData["Success"] = "Artistes assignés avec succès.";
+            return View("AddMeal", model);
+        }
+
+        [HttpPost]
+        [Route("unassign-artist")]
+        public async Task<IActionResult> UnassignArtist(Guid artistId, AdminMealsGestionViewModel model)
+        {
+            model.AssignedArtistIds.Remove(artistId);
+            model = await RebuildViewModel(model);
+
+            return View("AddMeal", model);
+        }
+
+
+        [HttpPost]
+        [Route("add-dish")]
+        public async Task<IActionResult> AddDish(AdminMealsGestionViewModel model, string name)
+        {
+            // Vérifier si le plat existe déjà en base de données
+            var dishExists = await _context.Dishes.AnyAsync(d => d.Name == name);
+            if (dishExists)
+            {
+                TempData["Error"] = "Un plat avec ce nom existe déjà.";
+                return View("AddMeal", model);
+            }
+
+            // Créer et ajouter le nouveau plat
+            var dish = new Dish { Name = name };
+            _context.Dishes.Add(dish);
+            await _context.SaveChangesAsync();
+
+            // Recharger les données pour reconstruire complètement le modèle
+            model.Dishes = await _context.Dishes.ToListAsync();
+            model.Artists = await _context.Artists.ToListAsync();
+            model.AssignedArtists = model.Artists.Where(a => model.AssignedArtistIds.Contains(a.Id)).ToList();
+
+            TempData["Success"] = "Plat ajouté avec succès.";
+            return View("AddMeal", model);
+        }
+
+
+
+
 
 
         [Route("infos-salle")]
@@ -324,5 +442,19 @@ namespace RanchDuBonheur.Controllers
 
             return RedirectToAction("Artists");
         }
+
+        private async Task<AdminMealsGestionViewModel> RebuildViewModel(AdminMealsGestionViewModel model)
+        {
+            var allArtists = await _context.Artists.ToListAsync();
+            var allDishes = await _context.Dishes.ToListAsync();
+
+            model.Artists = allArtists.Where(a => !model.AssignedArtistIds.Contains(a.Id)).ToList();
+            model.AssignedArtists = allArtists.Where(a => model.AssignedArtistIds.Contains(a.Id)).ToList();
+            model.Dishes = allDishes.Where(d => !model.AssignedDishIds.Contains(d.Id)).ToList();
+            model.AssignedDishes = allDishes.Where(d => model.AssignedDishIds.Contains(d.Id)).ToList();
+
+            return model;
+        }
+
     }
 }

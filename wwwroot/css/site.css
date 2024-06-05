@@ -194,3 +194,81 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
         height: auto; /* Allow image to retain its original height */
     }
 }
+
+
+.toast {
+    background-color: #F0E4C7; /* Fond clair */
+    color: #593815; /* Texte marron */
+    border-left: 5px solid #8B572A; /* Bordure gauche épaisse et foncée */
+    font-family: 'Open Sans', sans-serif;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); /* Ombre similaire à celle des cartes */
+    opacity: 0.95;
+}
+
+.toast-header {
+    background-color: #8B572A; /* Arrière-plan marron pour l'entête */
+    color: #F7F6D5; /* Texte crème */
+    border-bottom: 1px solid #593815; /* Séparation */
+    font-family: 'Playfair Display', serif; /* Police pour les titres */
+}
+
+.toast-body {
+    background-color: #FFF1D6; /* Fond très clair */
+    padding: 10px; /* Espacement interne */
+}
+
+.btn-close {
+    filter: brightness(0) invert(1); /* Inverse les couleurs pour le bouton de fermeture */
+}
+
+.toast .btn-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Styles globaux pour les modaux */
+.modal-content {
+    background-color: #F0E4C7; /* Couleur de fond pour tous les modaux */
+    color: #593815; /* Couleur de texte pour tous les modaux */
+}
+
+.modal-header, .modal-footer {
+    background-color: #8B572A;
+    color: #F7F6D5;
+}
+
+    .modal-header .btn-close {
+        filter: brightness(0) invert(1); /* Assure que le bouton de fermeture est visible */
+    }
+
+.modal-title {
+    color: #F7F6D5;
+}
+
+.modal-body {
+    color: #593815; /* Assure que le texte dans le corps du modal est visible et cohérent */
+}
+
+.modal-footer .btn-primary {
+    background-color: #593815;
+    color: #FFF1D6;
+    border-color: #452a0f;
+}
+
+    .modal-footer .btn-primary:hover {
+        background-color: #452a0f;
+        color: #c9b39c;
+    }
+
+.modal-footer .btn-secondary {
+    background-color: #28A745;
+    border-color: #28A745;
+}
+
+    .modal-footer .btn-secondary:hover {
+        background-color: #21783A;
+        border-color: #1A622E;
+    }
+
+.modal-footer .btn {
+    border-radius: 0; /* Style optionnel pour donner aux boutons un look plus net */
+}

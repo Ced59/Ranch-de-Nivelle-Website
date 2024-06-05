@@ -15,6 +15,8 @@ namespace RanchDuBonheur.Data
         public DbSet<Artist> Artists { get; set; }
         public DbSet<Dish> Dishes { get; set; }
         public DbSet<Meal> Meals { get; set; }
+        public DbSet<MealDish> MealDishes { get; set; }
+        public DbSet<MealArtist> MealArtists { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
