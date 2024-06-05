@@ -94,6 +94,11 @@ namespace RanchDuBonheur.Controllers
             // Recharger les dépendances nécessaires pour le modèle
             model.Artists = await _context.Artists.ToListAsync();
             model.Dishes = await _context.Dishes.ToListAsync();
+            var newMeal = new Meal
+            {
+                Date = DateOnly.FromDateTime(DateTime.Now)
+            };
+            model.NewMeal = newMeal;
             return View("AddMeal", model); // Assurez-vous que le nom de la vue est correct
         }
 
