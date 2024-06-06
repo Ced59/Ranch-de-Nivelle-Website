@@ -1,75 +1,77 @@
-﻿@model dynamic
-
+﻿@using RanchDuBonheur.Extensions
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model Tuple<List<RanchDuBonheur.Models.Pocos.Meals.Meal>, bool>
 @{
-    ViewBag.Title = "Les prochains repas";
-    Layout = "_Layout";
+    ViewData["Title"] = "Prochains Repas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var meals = Model.Item1;
+    var showPast = Model.Item2;
 }
 
-<h2>Les repas</h2>
+<div class="container">
 
+    <h1 class="text-center my-4">@(showPast ? "Repas Passés" : "Prochains Repas")</h1>
 
-<div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
-    <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
-        <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    <div class="d-flex justify-content-center mb-3">
+        <a asp-action="Index" asp-route-showPast="@(showPast ? false : true)" class="btn btn-primary">
+            @(showPast ? "Voir les prochains repas" : "Voir les repas passés")
+        </a>
     </div>
-    <div class="carousel-inner">
-        <div class="carousel-item active">
-            <div class="card mb-3" style="max-width: 540px;">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        <img src="..." class="img-fluid rounded-start" alt="...">
-                    </div>
-                    <div class="col-md-8">
+
+    @if (meals.Count == 0)
+    {
+        <p class="text-center mt-4">Aucun repas @(showPast ? "passé" : "à venir") n'est actuellement enregistré.</p>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var meal in meals)
+            {
+                <div class="col-md-4">
+                    <div class="card text-card-color cards-color mt-3">
                         <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content.</p>
-                            <p class="card-text"><small class="text-muted">Last updated 3 mins ago</small></p>
+                            <h5 class="card-title text-center">@GetCapitalizedDate(meal.Date)</h5>
+                            <h6 class="card-subtitle mb-2">Prix: @meal.Price €</h6>
+                            <p class="card-text">@meal.Commentaires</p>
+
+                            <h6>Plats:</h6>
+                            @foreach (var category in Enum.GetValues(typeof(RanchDuBonheur.Models.Pocos.Meals.DishCategory)).Cast<RanchDuBonheur.Models.Pocos.Meals.DishCategory>())
+                            {
+                                var dishesInCategory = meal.MealDishes.Where(md => md.Dish.Category == category).Select(md => md.Dish).ToList();
+                                if (dishesInCategory.Any())
+                                {
+                                    <strong>@category.GetDescription()</strong>
+                                    <ul>
+                                        @foreach (var dish in dishesInCategory)
+                                        {
+                                            <li>@dish.Name</li>
+                                        }
+                                    </ul>
+                                }
+                            }
+
+                            <h6>Artistes:</h6>
+                            <ul>
+                                @foreach (var artist in meal.MealArtists.Select(ma => ma.Artist))
+                                {
+                                    <li>@artist.Name</li>
+                                }
+                            </ul>
                         </div>
                     </div>
                 </div>
-            </div>
+            }
         </div>
-        <div class="carousel-item">
-            <div class="card mb-3" style="max-width: 540px;">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        <img src="..." class="img-fluid rounded-start" alt="...">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">This card has supporting text below as a natural lead-in to additional content.</p>
-                            <p class="card-text"><small class="text-muted">Last updated 1 hr ago</small></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item">
-            <div class="card mb-3" style="max-width: 540px;">
-                <div class="row g-0">
-                    <div class="col-md-4">
-                        <img src="..." class="img-fluid rounded-start" alt="...">
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card-body">
-                            <h5 class="card-title">Card title</h5>
-                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content that is longer.</p>
-                            <p class="card-text"><small class="text-muted">Last updated 1 day ago</small></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Next</span>
-    </button>
+    }
+
 </div>
+
+@functions {
+    private string GetCapitalizedDate(DateOnly date)
+    {
+        var dateTime = date.ToDateTime(new TimeOnly(0));
+        var formattedDate = dateTime.ToString("dddd d MMMM yyyy", new System.Globalization.CultureInfo("fr-FR"));
+        return char.ToUpper(formattedDate[0]) + formattedDate.Substring(1);
+    }
+}
+
