@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using RanchDuBonheur.Data;
 using RanchDuBonheur.Init;
 using RanchDuBonheur.Services.Implementations;

@@ -1,9 +1,6 @@
 ﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace RanchDuBonheur.Services.Implementations
 {

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using RanchDuBonheur.Models.Pocos.Meals;
 using System.ComponentModel;
 
 namespace RanchDuBonheur.Extensions
@@ -21,7 +20,7 @@ namespace RanchDuBonheur.Extensions
                 .Select(e => new SelectListItem
                 {
                     Value = e.ToString(),
-                    Text = e.GetDescription() 
+                    Text = e.GetDescription()
                 });
         }
     }

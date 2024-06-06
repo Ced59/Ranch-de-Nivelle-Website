@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using RanchDuBonheur.Models.Pocos.Artists;
+﻿using RanchDuBonheur.Models.Pocos.Artists;
+using System.ComponentModel.DataAnnotations;
 
 namespace RanchDuBonheur.Models.Pocos.Meals
 {

@@ -3,13 +3,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
-using RanchDuBonheur.Models.Pocos;
 using RanchDuBonheur.Models.Pocos.Artists;
 using RanchDuBonheur.Models.Pocos.Meals;
 using RanchDuBonheur.Models.ViewModels;
-using RanchDuBonheur.Services.Implementations;
 using RanchDuBonheur.Services.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RanchDuBonheur.Controllers
 {
@@ -63,7 +60,7 @@ namespace RanchDuBonheur.Controllers
         public async Task<IActionResult> AddMeal()
         {
             var artists = await _context.Artists.ToListAsync();
-            var dishes = await _context.Dishes.Where(d => d.Category == DishCategory.APERITIF).ToListAsync(); 
+            var dishes = await _context.Dishes.Where(d => d.Category == DishCategory.APERITIF).ToListAsync();
             var newMeal = new Meal
             {
                 Date = DateOnly.FromDateTime(DateTime.Now),
@@ -75,7 +72,7 @@ namespace RanchDuBonheur.Controllers
                 Artists = artists,
                 Dishes = dishes,
                 NewMeal = newMeal,
-                SelectedCategory = DishCategory.APERITIF 
+                SelectedCategory = DishCategory.APERITIF
             };
 
             return View(viewModel);
@@ -262,8 +259,8 @@ namespace RanchDuBonheur.Controllers
                 .ToListAsync();
 
             model = await RebuildViewModel(model);
-            model.Dishes = filteredDishes;  
-            model.SelectedCategory = model.SelectedCategory;  
+            model.Dishes = filteredDishes;
+            model.SelectedCategory = model.SelectedCategory;
 
             return View("AddMeal", model);
         }
@@ -306,14 +303,14 @@ namespace RanchDuBonheur.Controllers
 
 
         [HttpPost]
-        [Authorize] 
+        [Authorize]
         [Route("delete-user/{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var currentUserID = _userManager.GetUserId(User); 
+            var currentUserID = _userManager.GetUserId(User);
             if (currentUserID == id)
             {
-                
+
                 TempData["Error"] = "Vous ne pouvez pas supprimer votre propre compte.";
                 return RedirectToAction("Users");
             }
@@ -412,7 +409,7 @@ namespace RanchDuBonheur.Controllers
                 else
                 {
                     TempData["Error"] = "Échec de l'upload de la photo.";
-                    return RedirectToAction("Artists"); 
+                    return RedirectToAction("Artists");
                 }
             }
 
@@ -477,7 +474,7 @@ namespace RanchDuBonheur.Controllers
                         else
                         {
                             TempData["Error"] = "Échec de l'upload de la photo.";
-                            return RedirectToAction("Artists"); 
+                            return RedirectToAction("Artists");
                         }
                     }
 
