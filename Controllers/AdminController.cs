@@ -63,27 +63,44 @@ namespace RanchDuBonheur.Controllers
         public async Task<IActionResult> AddMeal()
         {
             var artists = await _context.Artists.ToListAsync();
-            var dishes = await _context.Dishes.ToListAsync();
+            var dishes = await _context.Dishes.Where(d => d.Category == DishCategory.APERITIF).ToListAsync(); 
             var newMeal = new Meal
             {
-                Date = DateOnly.FromDateTime(DateTime.Now)
+                Date = DateOnly.FromDateTime(DateTime.Now),
+                Price = 40
             };
 
             var viewModel = new AdminMealsGestionViewModel
             {
                 Artists = artists,
                 Dishes = dishes,
-                NewMeal = newMeal
+                NewMeal = newMeal,
+                SelectedCategory = DishCategory.APERITIF 
             };
 
             return View(viewModel);
         }
 
+        [HttpPost]
+        [Route("add-meal")]
         public async Task<IActionResult> AddMealAction(AdminMealsGestionViewModel model)
         {
             if (model.NewMeal.Date < DateOnly.FromDateTime(DateTime.Now))
             {
                 ModelState.AddModelError("NewMeal.Date", "La date doit être aujourd'hui ou une date future.");
+            }
+
+            bool mealExists = await _context.Meals.AnyAsync(m => m.Date == model.NewMeal.Date);
+            if (mealExists)
+            {
+                TempData["Error"] = "Un repas est déjà planifié pour cette date. Veuillez choisir une autre date.";
+                model.Artists = await _context.Artists.ToListAsync();
+                model.Dishes = await _context.Dishes.ToListAsync();
+                model.NewMeal = new Meal
+                {
+                    Date = DateOnly.FromDateTime(DateTime.Now) // S'assurer que la date par défaut est aujourd'hui pour le réaffichage
+                };
+                return View("AddMeal", model);
             }
 
             if (ModelState.IsValid)
@@ -192,7 +209,7 @@ namespace RanchDuBonheur.Controllers
 
         [HttpPost]
         [Route("add-dish")]
-        public async Task<IActionResult> AddDish(AdminMealsGestionViewModel model, string name)
+        public async Task<IActionResult> AddDish(AdminMealsGestionViewModel model, string name, DishCategory category)
         {
             // Vérifier si le plat existe déjà en base de données
             var dishExists = await _context.Dishes.AnyAsync(d => d.Name == name);
@@ -206,19 +223,50 @@ namespace RanchDuBonheur.Controllers
             }
 
             // Créer et ajouter le nouveau plat
-            var dish = new Dish { Name = name };
+            var dish = new Dish { Name = name, Category = category };
             _context.Dishes.Add(dish);
             await _context.SaveChangesAsync();
 
-            // Recharger les données pour reconstruire complètement le modèle
-            model.Dishes = await _context.Dishes.ToListAsync();
-            model.Artists = await _context.Artists.ToListAsync();
-            model.AssignedArtists = model.Artists.Where(a => model.AssignedArtistIds.Contains(a.Id)).ToList();
+            model = await RebuildViewModel(model);
 
             TempData["Success"] = "Plat ajouté avec succès.";
             return View("AddMeal", model);
         }
 
+        [HttpPost]
+        [Route("delete-dish")]
+        public async Task<IActionResult> DeleteDish(Guid dishId)
+        {
+            var dish = await _context.Dishes.FindAsync(dishId);
+            if (dish != null)
+            {
+                _context.Dishes.Remove(dish);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Plat supprimé avec succès.";
+            }
+            else
+            {
+                TempData["Error"] = "Plat non trouvé.";
+            }
+            return RedirectToAction("AddMeal"); // Assurez-vous que cette redirection est correcte selon votre architecture de routing
+        }
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> FilterDishesByCategory(AdminMealsGestionViewModel model)
+        {
+            var filteredDishes = await _context.Dishes
+                .Where(d => d.Category == model.SelectedCategory)
+                .ToListAsync();
+
+            model = await RebuildViewModel(model);
+            model.Dishes = filteredDishes;  
+            model.SelectedCategory = model.SelectedCategory;  
+
+            return View("AddMeal", model);
+        }
 
 
 
@@ -453,11 +501,20 @@ namespace RanchDuBonheur.Controllers
 
             model.Artists = allArtists.Where(a => !model.AssignedArtistIds.Contains(a.Id)).ToList();
             model.AssignedArtists = allArtists.Where(a => model.AssignedArtistIds.Contains(a.Id)).ToList();
-            model.Dishes = allDishes.Where(d => !model.AssignedDishIds.Contains(d.Id)).ToList();
+
+            model.Dishes = allDishes.Where(d => !model.AssignedDishIds.Contains(d.Id) && d.Category == model.SelectedCategory).ToList();
             model.AssignedDishes = allDishes.Where(d => model.AssignedDishIds.Contains(d.Id)).ToList();
+
+            model.NewMeal = new Meal
+            {
+                Date = model.NewMeal.Date,
+                Price = model.NewMeal.Price,
+                Commentaires = model.NewMeal.Commentaires
+            };
 
             return model;
         }
+
 
     }
 }

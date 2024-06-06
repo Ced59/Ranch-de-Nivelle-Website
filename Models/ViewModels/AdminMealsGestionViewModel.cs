@@ -12,4 +12,7 @@ public class AdminMealsGestionViewModel
     public List<Guid> AssignedDishIds { get; set; } = [];
     public List<Dish> AssignedDishes { get; set; } = [];
     public Meal NewMeal { get; set; } = new();
+
+    public DishCategory? SelectedCategory { get; set; }
+    public IEnumerable<DishCategory> Categories => Enum.GetValues(typeof(DishCategory)).Cast<DishCategory>();
 }

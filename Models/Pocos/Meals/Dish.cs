@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace RanchDuBonheur.Models.Pocos.Meals
 {
@@ -9,6 +11,26 @@ namespace RanchDuBonheur.Models.Pocos.Meals
         [MaxLength(100)]
         public string Name { get; set; } = "";
 
+        [Required]
+        public DishCategory Category { get; set; }
+
         public ICollection<MealDish> MealDishes { get; set; } = new List<MealDish>();
     }
+
+
+    public enum DishCategory
+    {
+        [Description("Apéritif")]
+        APERITIF,
+
+        [Description("Entrée")]
+        STARTER,
+
+        [Description("Plat Principal")]
+        MAIN_COURSE,
+
+        [Description("Dessert")]
+        DESSERT
+    }
+
 }

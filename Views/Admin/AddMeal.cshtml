@@ -1,4 +1,7 @@
-﻿@model RanchDuBonheur.Models.ViewModels.AdminMealsGestionViewModel
+﻿@using RanchDuBonheur.Models.Pocos.Meals
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using RanchDuBonheur.Extensions
+@model RanchDuBonheur.Models.ViewModels.AdminMealsGestionViewModel
 
 @{
     ViewData["Title"] = "Ajouter un repas";
@@ -13,7 +16,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4 d-flex flex-column">
-        <form asp-action="AddMealAction" class="d-flex flex-column h-100">
+        <form asp-controller="Admin" asp-action="AddMealAction" method="post" class="d-flex flex-column h-100">
             <div>
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group mt-sm-3 mt-md-0">
@@ -28,7 +31,7 @@
                 </div>
                 <div class="form-group mt-sm-3 mt-md-0">
                     <label asp-for="@newMeal.Commentaires" class="control-label"></label>
-                    <textarea asp-for="@newMeal.Commentaires" class="form-control" style="height: 200px;"></textarea>
+                    <textarea asp-for="@newMeal.Commentaires" class="form-control" style="height: 260px;"></textarea>
                     <span asp-validation-for="@newMeal.Commentaires" class="text-danger"></span>
                 </div>
             </div>
@@ -52,39 +55,65 @@
         }
         @foreach (var id in Model.AssignedDishIds)
         {
-            <input type="hidden" name="AssignedDishIds" value="@id"/>
+            <input type="hidden" name="AssignedDishIds" value="@id" />
         }
+        <input type="hidden" asp-for="SelectedCategory" />
         <div class="form-group flex-grow-1 mt-sm-4 mt-md-0">
             <label for="artistSelect">Sélectionnez les artistes:</label>
-            <select id="artistSelect" asp-for="@Model.AssignedArtistIds" asp-items="@(new SelectList(Model.Artists.Where(a => !Model.AssignedArtistIds.Contains(a.Id)), "Id", "Name"))" class="form-control" style="height: calc(200px + 125px);" multiple="multiple">
+            <select id="artistSelect" asp-for="@Model.AssignedArtistIds" asp-items="@(new SelectList(Model.Artists.Where(a => !Model.AssignedArtistIds.Contains(a.Id)), "Id", "Name"))" class="form-control" style="height: calc(260px + 125px);" multiple="multiple">
             </select>
         </div>
         <div class="form-group mt-3">
             <button type="submit" class="btn btn-primary">Assigner Artistes</button>
         </div>
     </form>
-    <form asp-action="AssignDish" method="post" class="col-md-4 d-flex flex-column">
-        @foreach (var id in Model.AssignedArtistIds)
-        {
-            <input type="hidden" name="AssignedArtistIds" value="@id" />
-        }
-        @foreach (var id in Model.AssignedDishIds)
-        {
-            <input type="hidden" name="AssignedDishIds" value="@id" />
-        }
-        <div class="form-group flex-grow-1 mt-sm-3 mt-md-0">
-            <label for="dishSelect">Sélectionnez les plats:</label>
-            <select asp-for="@Model.AssignedDishIds" asp-items="@(new SelectList(Model.Dishes.Where(d => !Model.AssignedDishIds.Contains(d.Id)), "Id", "Name"))" class="form-control" style="height: calc(200px + 125px);" multiple="multiple">
-            </select>
-        </div>
-        <div class="form-group mt-3 d-flex justify-content-between">
-            <input type="submit" value="Assigner Plats" class="btn btn-primary"/>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDishModal">
-                Ajouter un nouveau plat
-            </button>
 
-        </div>
-    </form>
+
+    <div class=" col-md-4 d-flex flex-column">
+        <form asp-action="FilterDishesByCategory" method="post">
+            @foreach (var id in Model.AssignedArtistIds)
+            {
+                <input type="hidden" name="AssignedArtistIds" value="@id" />
+            }
+            @foreach (var id in Model.AssignedDishIds)
+            {
+                <input type="hidden" name="AssignedDishIds" value="@id" />
+            }
+            <div class="form-group">
+                <label for="categorySelect">Catégorie:</label>
+                <select id="categorySelect" asp-for="SelectedCategory" asp-items="@EnumExtensions.GetSelectList<DishCategory>()" class="form-control" onchange="this.form.submit();">
+                </select>
+            </div>
+        </form>
+
+
+        <form asp-action="AssignDish" method="post">
+            @foreach (var id in Model.AssignedArtistIds)
+            {
+                <input type="hidden" name="AssignedArtistIds" value="@id" />
+            }
+            @foreach (var id in Model.AssignedDishIds)
+            {
+                <input type="hidden" name="AssignedDishIds" value="@id" />
+            }
+            <input type="hidden" asp-for="SelectedCategory" />
+            <div class="form-group flex-grow-1 mt-sm-3 mt-md-0">
+                <label for="dishSelect">Sélectionnez les plats:</label>
+                <select asp-for="@Model.AssignedDishIds" asp-items="@(new SelectList(Model.Dishes.Where(d => !Model.AssignedDishIds.Contains(d.Id) && d.Category == Model.SelectedCategory), "Id", "Name"))" class="form-control" style="height: calc(200px + 125px);" multiple="multiple">
+                </select>
+            </div>
+            <div class="form-group mt-3 d-flex justify-content-between">
+                <button type="submit" class="btn btn-primary">Assigner</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDishModal">
+                    Nouveau
+                </button>
+                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteDishModal">
+                    Supprimer
+                </button>
+            </div>
+        </form>
+
+    </div>
 </div>
 
 <div class="row">
@@ -92,50 +121,51 @@
         <div class="row">
             <div class="col-md-6">
                 <h5>Artistes Assignés:</h5>
-                
-                    @foreach (var artist in Model.AssignedArtists)
-                    {
-                        <form asp-action="UnassignArtist" method="post" class="d-flex justify-content-around align-items-center">
-                            <!-- Conserver tous les artistes assignés excepté celui à supprimer -->
-                            @foreach (var id in Model.AssignedArtistIds.Where(x => x != artist.Id))
-                            {
-                                <input type="hidden" name="AssignedArtistIds" value="@id" />
-                            }
-                            @foreach (var id in Model.AssignedDishIds)
-                            {
-                                <input type="hidden" name="AssignedDishIds" value="@id" />
-                            }
-                            <input type="hidden" name="artistId" value="@artist.Id" />
-                            <span class="mt-2">@artist.Name</span>
-                            <button type="submit" class="btn btn-danger btn-sm ms-auto mt-2 me-4">Supprimer</button>
-                        </form>
-                    }
-                
+
+                @foreach (var artist in Model.AssignedArtists)
+                {
+                    <form asp-action="UnassignArtist" method="post" class="d-flex justify-content-around align-items-center">
+                        <!-- Conserver tous les artistes assignés excepté celui à supprimer -->
+                        @foreach (var id in Model.AssignedArtistIds.Where(x => x != artist.Id))
+                        {
+                            <input type="hidden" name="AssignedArtistIds" value="@id" />
+                        }
+                        @foreach (var id in Model.AssignedDishIds)
+                        {
+                            <input type="hidden" name="AssignedDishIds" value="@id" />
+                        }
+                        <input type="hidden" asp-for="SelectedCategory" />
+                        <input type="hidden" name="artistId" value="@artist.Id" />
+                        <span class="mt-2">@artist.Name</span>
+                        <button type="submit" class="btn btn-danger btn-sm ms-auto mt-2 me-4">Supprimer</button>
+                    </form>
+                }
+
             </div>
 
-            
+
             <div class="col-md-6">
                 <h5>Plats Assignés:</h5>
-                
-                    @foreach (var dish in Model.AssignedDishes)
-                    {
-                        <form asp-action="UnassignDish" method="post" class="d-flex justify-content-around align-items-center">
-                            @foreach (var id in Model.AssignedDishIds.Where(x => x != dish.Id))
-                            {
-                                <input type="hidden" name="AssignedDishIds" value="@id" />
-                            }
-                            @foreach (var id in Model.AssignedArtistIds)
-                            {
-                                <input type="hidden" name="AssignedArtistIds" value="@id" />
-                            }
-                            <input type="hidden" name="dishId" value="@dish.Id" />
-                        
-                            <span class="mt-2">@dish.Name</span>
-                            <button type="submit" class="btn btn-danger btn-sm ms-auto mt-2">Supprimer</button>
-                        
-                        </form>
-                    }
-                
+
+                @foreach (var dish in Model.AssignedDishes)
+                {
+                    <form asp-action="UnassignDish" method="post" class="d-flex justify-content-around align-items-center">
+                        @foreach (var id in Model.AssignedDishIds.Where(x => x != dish.Id))
+                        {
+                            <input type="hidden" name="AssignedDishIds" value="@id" />
+                        }
+                        @foreach (var id in Model.AssignedArtistIds)
+                        {
+                            <input type="hidden" name="AssignedArtistIds" value="@id" />
+                        }
+                        <input type="hidden" name="dishId" value="@dish.Id" />
+                        <input type="hidden" asp-for="SelectedCategory" />
+                        <span class="mt-2">@dish.Name</span>
+                        <button type="submit" class="btn btn-danger btn-sm ms-auto mt-2">Supprimer</button>
+
+                    </form>
+                }
+
             </div>
         </div>
     </div>
@@ -164,30 +194,70 @@
                     <div class="mb-3">
                         <label for="dishName" class="form-label">Nom du Plat</label>
                         <input type="text" class="form-control" id="dishName" name="name" required>
-                        <!-- Champs cachés pour conserver les données existantes du formulaire de repas -->
-                        <input type="hidden" name="Date" value="@Model.NewMeal.Date.ToString("yyyy-MM-dd")" />
-                        <input type="hidden" name="Price" value="@Model.NewMeal.Price" />
-                        <input type="hidden" name="Commentaires" value="@Model.NewMeal.Commentaires" />
-                        @foreach (var artistId in Model.AssignedArtistIds)
-                        {
-                            <input type="hidden" name="AssignedArtistIds" value="@artistId" />
-                        }
-                        @foreach (var id in Model.AssignedDishIds)
-                        {
-                            <input type="hidden" name="AssignedDishIds" value="@id" />
-                        }
                     </div>
+                    <div class="mb-3">
+                        <label for="categorySelect">Catégorie</label>
+                        <select id="categorySelect" name="Category" asp-items="@EnumExtensions.GetSelectList<DishCategory>()" class="form-control">
+                        </select>
+                    </div>
+                    <!-- Champs cachés pour conserver les données existantes du formulaire de repas -->
+                    <input type="hidden" name="Date" value="@Model.NewMeal.Date.ToString("yyyy-MM-dd")" />
+                    <input type="hidden" name="Price" value="@Model.NewMeal.Price" />
+                    <input type="hidden" name="Commentaires" value="@Model.NewMeal.Commentaires" />
+                    <input type="hidden" asp-for="SelectedCategory" />
+                    @foreach (var artistId in Model.AssignedArtistIds)
+                    {
+                        <input type="hidden" name="AssignedArtistIds" value="@artistId" />
+                    }
+                    @foreach (var id in Model.AssignedDishIds)
+                    {
+                        <input type="hidden" name="AssignedDishIds" value="@id" />
+                    }
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
                     <button type="submit" class="btn btn-primary">Enregistrer</button>
                 </div>
             </form>
-
-
         </div>
     </div>
 </div>
+
+<!-- Modal for Deleting a Dish -->
+<div class="modal fade" id="deleteDishModal" tabindex="-1" aria-labelledby="deleteDishModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteDishModalLabel">Supprimer un plat</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="DeleteDish" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="dishToDelete">Plat à supprimer:</label>
+                        <select id="dishToDelete" name="dishId" class="form-control">
+                            @foreach (DishCategory category in Enum.GetValues(typeof(DishCategory)))
+                            {
+                                <optgroup label="@category.GetDescription()">
+                                    @foreach (var dish in Model.Dishes.Where(d => d.Category == category))
+                                    {
+                                        <option value="@dish.Id">(@category.GetDescription()) @dish.Name</option>
+                                    }
+                                </optgroup>
+                            }
+                        </select>
+                    </div>
+                    Êtes-vous sûr de vouloir supprimer ce plat ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-danger" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce plat ?');">Supprimer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 
 

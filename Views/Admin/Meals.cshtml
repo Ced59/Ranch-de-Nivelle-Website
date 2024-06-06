@@ -9,6 +9,12 @@
 
 
     <h2 class="text-center">Gestion des repas</h2>
+    
+    <a asp-controller="Admin" asp-action="AddMeal">
+        <button type="button" class="btn btn-success mt-4 mb-4">
+            Ajouter un repas
+        </button>
+    </a>
 
     @if (meals.Count == 0)
     {
@@ -47,12 +53,6 @@
             </div>
         </div>
     }
-
-    <a asp-controller="Admin" asp-action="AddMeal">
-        <button type="button" class="btn btn-success mt-4">
-            Ajouter un repas
-        </button>
-    </a>
 
 
 </div>

@@ -60,6 +60,9 @@ namespace RanchDuBonheur.Data
                     .IsRequired()
                     .HasMaxLength(100)
                     .HasColumnType("nvarchar(100)");
+
+                entity.Property(d => d.Category)
+                    .IsRequired();
             });
 
             // Configure Meal entity
