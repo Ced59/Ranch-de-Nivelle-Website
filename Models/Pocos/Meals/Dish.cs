@@ -28,6 +28,9 @@ namespace RanchDuBonheur.Models.Pocos.Meals
         [Description("Plat Principal")]
         MAIN_COURSE,
 
+        [Description("Fromages")]
+        CHEESES,
+
         [Description("Dessert")]
         DESSERT
     }

@@ -56,6 +56,48 @@ namespace RanchDuBonheur.Controllers
             return View(meals);
         }
 
+        [HttpPost]
+        [Route("delete-meal/{mealId}")]
+        public async Task<IActionResult> DeleteMeal(Guid mealId)
+        {
+            var meal = await _context.Meals.Include(m => m.MealArtists).Include(m => m.MealDishes)
+                .FirstOrDefaultAsync(m => m.Id == mealId);
+
+            if (meal == null)
+            {
+                TempData["Error"] = "Le repas spécifié n'a pas été trouvé.";
+                return RedirectToAction("Meals");
+            }
+
+            _context.MealArtists.RemoveRange(meal.MealArtists);
+            _context.MealDishes.RemoveRange(meal.MealDishes);
+
+            _context.Meals.Remove(meal);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Le repas a été supprimé avec succès.";
+            return RedirectToAction("Meals");
+        }
+
+        [HttpGet]
+        [Route("edit-meal/{mealId}")]
+        public async Task<IActionResult> EditMeal(Guid mealId)
+        {
+            // Récupération du repas à partir de l'ID
+            var meal = await _context.Meals.FindAsync(mealId);
+
+            if (meal == null)
+            {
+                TempData["Error"] = "Le repas spécifié n'a pas été trouvé.";
+                return RedirectToAction("Meals");
+            }
+
+            // TODO: Préparer et passer les données nécessaires à la vue de modification
+            // Pour l'instant, vous pouvez simplement retourner la vue avec le repas récupéré
+            return RedirectToAction("Meals");
+        }
+
+
         [Route("add")]
         public async Task<IActionResult> AddMeal()
         {
