@@ -142,8 +142,8 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
     height: auto;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    display: block; 
-    margin: 0 auto; 
+    display: block;
+    margin: 0 auto;
 }
 
 .info-text {
@@ -162,7 +162,7 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
 
 .justified-text {
     text-align: justify;
-    text-indent: 60px; 
+    text-indent: 60px;
 }
 
 .cards-color {
@@ -272,3 +272,21 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
 .modal-footer .btn {
     border-radius: 0; /* Style optionnel pour donner aux boutons un look plus net */
 }
+
+.artist-image-container {
+    height: 250px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.card ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+    .card ul li {
+        padding-left: 0;
+    }

@@ -1,5 +1,6 @@
 ﻿@using RanchDuBonheur.Extensions
 @using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.IdentityModel.Tokens
 @model Tuple<List<RanchDuBonheur.Models.Pocos.Meals.Meal>, bool>
 @{
     ViewData["Title"] = "Prochains Repas";
@@ -28,35 +29,61 @@
             @foreach (var meal in meals)
             {
                 <div class="col-md-4">
-                    <div class="card text-card-color cards-color mt-3">
+                    <div class="card text-card-color cards-color mt-3 h-100 no-hover-effect">
+                        <div class="card-header">
+                            <div id="carouselArtist@meal.Id" class="carousel slide" data-ride="carousel" data-interval="4000">
+                                <div class="carousel-inner">
+                                    @{
+                                        bool isFirst = true;
+                                    }
+                                    @foreach (var artist in meal.MealArtists.Select(ma => ma.Artist))
+                                    {
+                                        <div class="carousel-item @(isFirst ? "active" : "")">
+                                            <div class="artist-image-container d-flex justify-content-center align-items-center">
+                                                <img src="@artist.PhotoUrl" class="d-block img-fluid">
+                                            </div>
+                                        </div>
+                                        isFirst = false;
+                                    }
+                                </div>
+                            </div>
+                        </div>
                         <div class="card-body">
-                            <h5 class="card-title text-center">@GetCapitalizedDate(meal.Date)</h5>
-                            <h6 class="card-subtitle mb-2">Prix: @meal.Price €</h6>
-                            <p class="card-text">@meal.Commentaires</p>
-
-                            <h6>Plats:</h6>
-                            @foreach (var category in Enum.GetValues(typeof(RanchDuBonheur.Models.Pocos.Meals.DishCategory)).Cast<RanchDuBonheur.Models.Pocos.Meals.DishCategory>())
-                            {
-                                var dishesInCategory = meal.MealDishes.Where(md => md.Dish.Category == category).Select(md => md.Dish).ToList();
-                                if (dishesInCategory.Any())
+                            <h3 class="card-title text-center">@GetCapitalizedDate(meal.Date)</h3>
+                            <h4 class="card-subtitle mb-2 mt-3 text-center">Prix: @meal.Price €</h4>
+                            <h5 class="text-center mt-3 mb-4">Boissons à volonté!!</h5>
+                            <div class="text-center">
+                                @foreach (var category in Enum.GetValues(typeof(RanchDuBonheur.Models.Pocos.Meals.DishCategory)).Cast<RanchDuBonheur.Models.Pocos.Meals.DishCategory>())
                                 {
-                                    <strong>@category.GetDescription()</strong>
-                                    <ul>
-                                        @foreach (var dish in dishesInCategory)
-                                        {
-                                            <li>@dish.Name</li>
-                                        }
-                                    </ul>
+                                    var dishesInCategory = meal.MealDishes.Where(md => md.Dish.Category == category).Select(md => md.Dish).ToList();
+                                    if (dishesInCategory.Any())
+                                    {
+                                        <strong>@category.GetDescription()</strong>
+                                        <ul>
+                                            @foreach (var dish in dishesInCategory)
+                                            {
+                                                <li>@dish.Name</li>
+                                            }
+                                        </ul>
+                                    }
                                 }
-                            }
 
-                            <h6>Artistes:</h6>
-                            <ul>
-                                @foreach (var artist in meal.MealArtists.Select(ma => ma.Artist))
+                                @if (!@meal.Commentaires.IsNullOrEmpty())
                                 {
-                                    <li>@artist.Name</li>
+                                    <strong>Infos complémentaires</strong>
+                                    <p class="card-text">@meal.Commentaires</p>
                                 }
-                            </ul>
+                                <br/>
+                                <hr/>
+                                <br/>
+                                <strong>Avec:</strong>
+                                <ul>
+                                    @foreach (var artist in meal.MealArtists.Select(ma => ma.Artist))
+                                    {
+                                        <li class="mt-2">@artist.Name</li>
+                                    }
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -73,5 +100,13 @@
         var formattedDate = dateTime.ToString("dddd d MMMM yyyy", new System.Globalization.CultureInfo("fr-FR"));
         return char.ToUpper(formattedDate[0]) + formattedDate.Substring(1);
     }
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.carousel').carousel('cycle');
+        });
+    </script>
 }
 
