@@ -19,12 +19,12 @@
                 <li class="nav-item m-2">
                     <a class="nav-link text-dark" asp-area="" asp-controller="Artists" asp-action="Index">Les Artistes</a>
                 </li>
-                <li class="nav-item m-2">
+                @* <li class="nav-item m-2">
                     <a class="nav-link text-dark" asp-area="" asp-controller="Salle" asp-action="Index">La Salle</a>
                 </li>
                 <li class="nav-item m-2">
                     <a class="nav-link text-dark" asp-area="" asp-controller="Informations" asp-action="Index">Infos Utiles</a>
-                </li>
+                </li> *@
                 @if (User!.Identity!.IsAuthenticated)
                 {
                     <li class="nav-item m-2">
