@@ -13,7 +13,7 @@ services:
     networks:
       - nginx-network
     ports:
-      - "40413:80" # Expose le port 80 du conteneur sur le port 40413 du réseau 
+      - "43210:80"
     entrypoint: ["dotnet", "RanchDuBonheur.dll", "--ConnectionStrings:DefaultConnection", "Server=ranch_db;Database=RanchDuBonheurDb;User Id=SA;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True"]
 
   ranch_db:
