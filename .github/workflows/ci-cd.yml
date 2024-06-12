@@ -31,7 +31,8 @@ jobs:
         run: chmod 777 ranchdubonheur.tar
 
       - name: Copy Docker tar file to Server
-        run: scp -o StrictHostKeyChecking=no ranchdubonheur.tar ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ranchdubonheur.tar
+        run: |
+          sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no ranchdubonheur.tar ${secrets.VPS_USERNAME}@${secrets.VPS_HOST}:/home/${secrets.VPS_USERNAME}/ranchdubonheur.tar
 
       - name: SSH into VPS and deploy
         env:
