@@ -18,23 +18,32 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          platforms: linux/amd64
-          push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/ranchdubonheur:latest
-          file: ./Dockerfile
+      - name: Build Docker image
+        run: docker build -t ranchdubonheur:latest .
 
-      - name: Deploy to VPS
+      - name: Save Docker image to tar file
+        run: docker save -o ranchdubonheur.tar ranchdubonheur:latest
+
+      - name: Set permissions on tar file
+        run: chmod 777 ranchdubonheur.tar
+
+      - name: Copy Docker tar file to Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          source: ./ranchdubonheur.tar
+          target: /home/${{ secrets.VPS_USERNAME }}/ranchdubonheur.tar
+
+      - name: SSH into VPS and deploy
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           script: |
-            cd /var/www/ranchdubonheur
+            cd /home/${{ secrets.VPS_USERNAME }}
+            docker load -i ranchdubonheur.tar
             docker-compose down
-            docker pull ${{ secrets.DOCKER_USERNAME }}/ranchdubonheur:latest
             docker-compose up -d
