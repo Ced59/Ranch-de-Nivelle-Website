@@ -16,13 +16,13 @@ jobs:
         run: docker build -t ranchdubonheur:latest .
 
       - name: Create tar directory and set permissions
-        run: |
-          mkdir -p ${{ github.workspace }}/tarfiles
-          sudo chmod -R 777 ${{ github.workspace }}/tarfiles
+        run: mkdir -p ${{ github.workspace }}/tarfiles
 
       - name: Save Docker image to a tar file
-        run: |
-          docker save -o ${{ github.workspace }}/tarfiles/ranchdubonheur.tar ranchdubonheur:latest
+        run: docker save -o ${{ github.workspace }}/tarfiles/ranchdubonheur.tar ranchdubonheur:latest
+
+      - name: Set permissions on tar file
+        run: sudo chmod 777 ${{ github.workspace }}/tarfiles/ranchdubonheur.tar
 
       - name: List contents of the tar directory for debugging
         run: ls -la ${{ github.workspace }}/tarfiles
@@ -51,4 +51,5 @@ jobs:
       - name: Docker Login and Push Image
         run: |
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          docker tag ranchdubonheur:latest ${{ secrets.DOCKER_USERNAME }}/ranchdubonheur:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/ranchdubonheur:latest
