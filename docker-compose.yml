@@ -10,19 +10,17 @@ services:
       - DefaultUser__Password=${DEFAULT_PASSWORD}
     depends_on:
       - ranch_db
-    networks: 
-      - nginx-network 
-    # La chaîne de connexion sera construite au démarrage du conteneur
-    # en utilisant les informations du service "db"
-    entrypoint: ["dotnet", "RanchDuBonheur.dll", "--ConnectionStrings:DefaultConnection", "Server=db;Database=RanchDuBonheurDb;User Id=SA;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True"]
+    networks:
+      - nginx-network
+    entrypoint: ["dotnet", "RanchDuBonheur.dll", "--ConnectionStrings:DefaultConnection", "Server=ranch_db;Database=RanchDuBonheurDb;User Id=SA;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True"]
 
   ranch_db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       - SA_PASSWORD=${SA_PASSWORD}
       - ACCEPT_EULA=Y
-    ports:
-      - "1433:1433"
+    #ports:
+    #  - "1433:1433"  # Supprimez cette ligne si vous n'avez pas besoin d'un accès externe
     volumes:
       - sql_data:/var/opt/mssql
 
