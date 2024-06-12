@@ -15,21 +15,25 @@ jobs:
       - name: Build Docker image
         run: docker build -t ranchdubonheur:latest .
 
-      - name: Login to DockerHub
-        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Tag and push Docker image to DockerHub
+      - name: Create tar directory and set permissions
         run: |
-          docker tag ranchdubonheur:latest ${{ secrets.DOCKER_USERNAME }}/ranchdubonheur:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/ranchdubonheur:latest
+          mkdir -p ${{ github.workspace }}/tarfiles
+          sudo chmod -R 777 ${{ github.workspace }}/tarfiles
 
-      - name: Copy project files to Server
+      - name: Save Docker image to a tar file
+        run: |
+          docker save -o ${{ github.workspace }}/tarfiles/ranchdubonheur.tar ranchdubonheur:latest
+
+      - name: List contents of the tar directory for debugging
+        run: ls -la ${{ github.workspace }}/tarfiles
+
+      - name: Copy Docker tar file to Server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASSWORD }}
-          source: "docker-compose.yml"
+          source: "${{ github.workspace }}/tarfiles/ranchdubonheur.tar"
           target: "/var/www/ranchdubonheur"
 
       - name: Deploy to VPS
@@ -40,6 +44,11 @@ jobs:
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
             cd /var/www/ranchdubonheur
+            docker load -i ranchdubonheur.tar
             docker-compose down
-            docker-compose pull
             docker-compose up -d
+
+      - name: Docker Login and Push Image
+        run: |
+          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          docker push ${{ secrets.DOCKER_USERNAME }}/ranchdubonheur:latest
