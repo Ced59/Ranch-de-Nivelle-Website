@@ -9,22 +9,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Build and tag Docker image
-      run: |
-        docker build -t ranchdubonheur:latest .
-        docker tag ranchdubonheur:latest ${{ secrets.VPS_HOST }}/ranchdubonheur:latest
-    - name: Push to VPS Registry
-      run: |
-        docker login ${{ secrets.VPS_HOST }} -u ${{ secrets.VPS_USERNAME }} -p ${{ secrets.VPS_PASSWORD }}
-        docker push ${{ secrets.VPS_HOST }}/ranchdubonheur:latest
-    - name: Deploy to VPS
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.VPS_HOST }}
-        username: ${{ secrets.VPS_USERNAME }}
-        password: ${{ secrets.VPS_PASSWORD }}
-        script: |
-          docker-compose down
-          docker-compose pull
-          docker-compose up -d
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t ranchdubonheur:latest .
+
+      - name: Copy Docker image to Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          source: "ranchdubonheur:latest"
+          target: "/var/www/ranchdubonheur"
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cd /var/www/ranchdubonheur
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d
