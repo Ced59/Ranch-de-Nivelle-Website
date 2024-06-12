@@ -15,18 +15,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2 # Pour la compatibilité multi-architecture
+        
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2 # Configuration de Buildx
+        
+      - name: Build and push Docker image (multi-arch)
+        uses: docker/build-push-action@v3 
         with:
           context: .
+          platforms: linux/amd64,linux/arm64  # Spécifiez les architectures cibles
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/ranchdubonheur:latest
           # Optionally, build with a specific Dockerfile
           file: ./Dockerfile
-          # Optionally, pass build args
-          build-args: |
-            VERSION=latest
-          
+
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
         with:
