@@ -15,6 +15,9 @@ jobs:
       - name: Build Docker image
         run: docker build -t ranchdubonheur:latest .
 
+      - name: Ensure proper permissions for saving Docker tar
+        run: sudo chmod -R 777 ${{ github.workspace }}
+
       - name: Save Docker image to a tar file
         run: docker save -o ranchdubonheur.tar ranchdubonheur:latest
 
