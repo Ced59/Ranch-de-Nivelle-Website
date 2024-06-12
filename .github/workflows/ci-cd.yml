@@ -2,7 +2,7 @@ name: CI/CD RanchDuBonheur
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build-and-deploy:
@@ -13,10 +13,10 @@ jobs:
     - name: Build and tag Docker image
       run: |
         docker build -t ranchdubonheur:latest .
-        docker tag ranchdubonheur:latest ${{ secrets.VPS_HOST }}/ranchdubonheur:latest # Tag avec l'hôte du VPS
+        docker tag ranchdubonheur:latest ${{ secrets.VPS_HOST }}/ranchdubonheur:latest
     - name: Push to VPS Registry
       run: |
-        docker login ${{ secrets.VPS_HOST }} -u ${{ secrets.VPS_USERNAME }} -p ${{ secrets.VPS_PASSWORD }}
+        docker login ${{ secrets.VPS_HOST }} -u ${{ secrets.VPS_USERNAME }} -p ${{ secrets.VPS_PASSWORD }} --insecure-registry  # Ajout de l'option --insecure-registry
         docker push ${{ secrets.VPS_HOST }}/ranchdubonheur:latest
     - name: Deploy to VPS
       uses: appleboy/ssh-action@master
