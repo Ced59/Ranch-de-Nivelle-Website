@@ -2,7 +2,7 @@ name: CI/CD RanchDuBonheur
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build-and-deploy:
@@ -16,13 +16,10 @@ jobs:
         run: docker build -t ranchdubonheur:latest .
 
       - name: Create tar directory and set permissions
-        run: mkdir -p ${{ github.workspace }}/tarfiles
+        run: mkdir -p ${{ github.workspace }}/tarfiles && chmod 777 ${{ github.workspace }}/tarfiles # Combined commands for brevity
 
       - name: Save Docker image to a tar file
         run: docker save -o ${{ github.workspace }}/tarfiles/ranchdubonheur.tar ranchdubonheur:latest
-
-      - name: Set permissions on tar file
-        run: sudo chmod 777 ${{ github.workspace }}/tarfiles/ranchdubonheur.tar
 
       - name: List contents of the tar directory for debugging
         run: ls -la ${{ github.workspace }}/tarfiles
@@ -32,24 +29,28 @@ jobs:
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
-          password: ${{ secrets.VPS_PASSWORD }}
+          # Use private SSH key instead of password for better security
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }} 
           source: "${{ github.workspace }}/tarfiles/ranchdubonheur.tar"
           target: "/var/www/ranchdubonheur/"
+          rm: true # Remove file after transfer
 
       - name: Deploy to VPS
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
-          password: ${{ secrets.VPS_PASSWORD }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           script: |
             cd /var/www/ranchdubonheur
             docker load -i ranchdubonheur.tar
             docker-compose down
             docker-compose up -d
 
-      - name: Docker Login and Push Image
+      - name: Docker Login and Push Image (Optional)
+        # This step depends on your hosting setup. You might not need to push to Docker Hub.
+        if: github.event_name == 'push'
         run: |
           echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
           docker tag ranchdubonheur:latest ${{ secrets.DOCKER_USERNAME }}/ranchdubonheur:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/ranchdubonheur:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/ranchdubonheur:latest 
