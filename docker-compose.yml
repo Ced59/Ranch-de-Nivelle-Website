@@ -12,6 +12,8 @@ services:
       - ranch_db
     networks:
       - nginx-network
+    ports:
+      - "40413:80" # Expose le port 80 du conteneur sur le port 40413 du réseau 
     entrypoint: ["dotnet", "RanchDuBonheur.dll", "--ConnectionStrings:DefaultConnection", "Server=ranch_db;Database=RanchDuBonheurDb;User Id=SA;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True"]
 
   ranch_db:
@@ -19,8 +21,6 @@ services:
     environment:
       - SA_PASSWORD=${SA_PASSWORD}
       - ACCEPT_EULA=Y
-    #ports:
-    #  - "1433:1433"  # Supprimez cette ligne si vous n'avez pas besoin d'un accès externe
     volumes:
       - sql_data:/var/opt/mssql
 
@@ -31,4 +31,3 @@ networks:
   nginx-network:
     external:
       name: nginx-network
-
