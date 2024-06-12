@@ -1,24 +1,25 @@
-#See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
-
+# Base image avec le runtime ASP.NET Core 8.0
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 80
 
+# Image de construction avec le SDK .NET 8.0
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["RanchDuBonheur.csproj", "."]
-RUN dotnet restore "./././RanchDuBonheur.csproj"
+
+# Copie et restauration des dépendances (packages NuGet)
+COPY ["RanchDuBonheur.csproj", "./"]
+RUN dotnet restore "RanchDuBonheur.csproj"
+
+# Copie du code source et construction du projet
 COPY . .
-WORKDIR "/src/."
-RUN dotnet build "./RanchDuBonheur.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "RanchDuBonheur.csproj" -c Release -o /app/build
 
+# Publication du projet
 FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./RanchDuBonheur.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "RanchDuBonheur.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
+# Image finale avec l'application publiée
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
