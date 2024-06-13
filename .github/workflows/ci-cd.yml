@@ -41,14 +41,14 @@ jobs:
       - name: SSH dans le VPS et déployer
         env:
           SSHPASS: ${{ secrets.VPS_PASSWORD }}
-          DEFAULT_USERNAME: ${{ secrets.DEFAULT_USERNAME }}
-          DEFAULT_EMAIL: ${{ secrets.DEFAULT_EMAIL }}
-          DEFAULT_PASSWORD: ${{ secrets.DEFAULT_PASSWORD }}
-          SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}" << EOF
             cd /tmp
             docker load -i ranchdubonheur.tar
+            export DEFAULT_USERNAME=${{ secrets.DEFAULT_USERNAME }}
+            export DEFAULT_EMAIL=${{ secrets.DEFAULT_EMAIL }}
+            export DEFAULT_PASSWORD=${{ secrets.DEFAULT_PASSWORD }}
+            export SA_PASSWORD=${{ secrets.SA_PASSWORD }}
             docker-compose down
             docker-compose up -d
           EOF

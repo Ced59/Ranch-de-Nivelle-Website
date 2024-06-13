@@ -5,9 +5,10 @@ services:
     build: .
     container_name: ranchdubonheur
     environment:
-      - DefaultUser__Username=${DEFAULT_USERNAME}
-      - DefaultUser__Email=${DEFAULT_EMAIL}
-      - DefaultUser__Password=${DEFAULT_PASSWORD}
+      - DEFAULT_USERNAME=${DEFAULT_USERNAME}
+      - DEFAULT_EMAIL=${DEFAULT_EMAIL}
+      - DEFAULT_PASSWORD=${DEFAULT_PASSWORD}
+      - SA_PASSWORD=${SA_PASSWORD}
     depends_on:
       - ranch_db
     networks:
