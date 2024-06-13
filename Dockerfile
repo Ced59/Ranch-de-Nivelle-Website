@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copie et restauration des dépendances (packages NuGet)
-COPY --no-cache ["RanchDuBonheur.csproj", "./"]
+COPY ["RanchDuBonheur.csproj", "./"]
 RUN dotnet restore "RanchDuBonheur.csproj"
 
 # Copie du code source et construction du projet
