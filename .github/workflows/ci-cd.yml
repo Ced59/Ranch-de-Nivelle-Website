@@ -12,34 +12,34 @@ jobs:
       packages: write
 
     steps:
-      - name: Install sshpass
+      - name: Installer sshpass
         run: sudo apt-get update && sudo apt-get install -y sshpass
 
-      - name: Checkout code
+      - name: Récupérer le code
         uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
+      - name: Configurer Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build Docker image
+      - name: Construire l'image Docker
         run: docker build -t ranchdubonheur:latest .
 
-      - name: Save Docker image to tar file
+      - name: Sauvegarder l'image Docker dans un fichier tar
         run: docker save -o ranchdubonheur.tar ranchdubonheur:latest
 
-      - name: Set permissions on tar file
+      - name: Définir les permissions sur le fichier tar
         run: chmod 777 ranchdubonheur.tar
 
-      - name: Copy Docker tar file to Server
+      - name: Copier le fichier tar Docker vers le serveur
         run: |
-          sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no ranchdubonheur.tar "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USERNAME }}/ranchdubonheur.tar"
+          sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no ranchdubonheur.tar "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur.tar"
 
-      - name: SSH into VPS and deploy
+      - name: SSH dans le VPS et déployer
         env:
           SSHPASS: ${{ secrets.VPS_PASSWORD }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}" << EOF
-            cd /home/${{ secrets.VPS_USERNAME }}
+            cd /tmp
             docker load -i ranchdubonheur.tar
             docker-compose down
             docker-compose up -d
