@@ -43,12 +43,22 @@ jobs:
           SSHPASS: ${{ secrets.VPS_PASSWORD }}
         run: |
           sshpass -e ssh -o StrictHostKeyChecking=no "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}" << EOF
-            cd /tmp
-            docker load -i ranchdubonheur.tar
-            export DEFAULT_USERNAME=${{ secrets.DEFAULT_USERNAME }}
-            export DEFAULT_EMAIL=${{ secrets.DEFAULT_EMAIL }}
-            export DEFAULT_PASSWORD=${{ secrets.DEFAULT_PASSWORD }}
-            export SA_PASSWORD=${{ secrets.SA_PASSWORD }}
-            docker-compose down
-            docker-compose up -d
+          cd /tmp
+
+          # Remove existing image and container
+          docker rmi ranchdubonheur:latest -f
+          docker rm ranchdubonheur -f
+
+          # Load the new image
+          docker load -i ranchdubonheur.tar
+
+          # Set environment variables (for database connection, etc.)
+          export DEFAULT_USERNAME=${{ secrets.DEFAULT_USERNAME }}
+          export DEFAULT_EMAIL=${{ secrets.DEFAULT_EMAIL }}
+          export DEFAULT_PASSWORD=${{ secrets.DEFAULT_PASSWORD }}
+          export SA_PASSWORD=${{ secrets.SA_PASSWORD }}
+
+          # Update to the latest images and rebuild/recreate containers
+          docker-compose pull
+          docker-compose up -d --build
           EOF
