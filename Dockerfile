@@ -8,16 +8,16 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copie et restauration des dépendances (packages NuGet)
-COPY ["RanchDuBonheur.csproj", "./"]
-RUN dotnet restore "RanchDuBonheur.csproj"
+COPY ["RanchDuBonheur/RanchDuBonheur.csproj", "RanchDuBonheur/"] 
+RUN dotnet restore "RanchDuBonheur/RanchDuBonheur.csproj"
 
 # Copie du code source et construction du projet
 COPY . .
-RUN dotnet build "RanchDuBonheur.csproj" -c Release -o /app/build
+RUN dotnet build "RanchDuBonheur/RanchDuBonheur.csproj" -c Release -o /app/build 
 
-# Publication du projet
+# Publication du projet dans un contexte réduit
 FROM build AS publish
-RUN dotnet publish "RanchDuBonheur.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "RanchDuBonheur/RanchDuBonheur.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Image finale avec l'application publiée
 FROM base AS final
