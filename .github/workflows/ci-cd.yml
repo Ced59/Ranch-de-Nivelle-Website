@@ -31,8 +31,12 @@ jobs:
         run: chmod 777 ranchdubonheur.tar
 
       - name: Copier le fichier tar Docker vers le serveur
+        run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no ranchdubonheur.tar "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur.tar"
+
+      - name: Copier docker-compose.yml et Dockerfile vers le serveur
         run: |
-          sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no ranchdubonheur.tar "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur.tar"
+          sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no docker-compose.yml "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/docker-compose.yml"
+          sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no Dockerfile "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/Dockerfile"
 
       - name: SSH dans le VPS et déployer
         env:
