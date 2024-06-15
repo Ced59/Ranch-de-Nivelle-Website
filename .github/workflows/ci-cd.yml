@@ -35,9 +35,11 @@ jobs:
       - name: Copier le fichier tar Docker vers le serveur
         run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no ranchdubonheur.tar "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur.tar"
 
+      - name: Créer le répertoire sur le serveur
+        run: sshpass -p "${{ secrets.VPS_PASSWORD }}" ssh -o StrictHostKeyChecking=no "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}" "mkdir -p /tmp/ranchdubonheur"
+
       - name: Copier tous les fichiers de l'application vers le serveur
-        run: |
-          sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no -r ./* "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur/"
+        run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no -r ./* "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur/"
 
       - name: SSH dans le VPS et déployer
         env:
