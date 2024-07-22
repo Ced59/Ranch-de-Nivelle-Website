@@ -30,5 +30,4 @@ namespace RanchDuBonheur.Init
             }
         }
     }
-
 }
