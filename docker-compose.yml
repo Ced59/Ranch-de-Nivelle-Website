@@ -12,7 +12,7 @@ services:
     depends_on:
       - ranch_db
     networks:
-      - nginx-network
+      - nginx-proxy-network
     ports:
       - "43210:80"
     entrypoint: ["dotnet", "RanchDuBonheur.dll", "--ConnectionStrings:DefaultConnection", "Server=ranch_db;Database=RanchDuBonheurDb;User Id=SA;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True"]
@@ -29,7 +29,7 @@ volumes:
   sql_data:
 
 networks:
-  nginx-network:
+  nginx-proxy-network:
     external:
-      name: nginx-network
+      name: nginx-proxy-network
 
