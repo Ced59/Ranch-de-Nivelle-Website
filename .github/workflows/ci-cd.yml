@@ -31,11 +31,13 @@ jobs:
 
     - name: Synchroniser les fichiers avec le serveur
       run: |
-        sshpass -p "${{ secrets.VPS_PASSWORD }}" rsync -avz \
-          --exclude '.git' \
-          --exclude 'ranchdubonheur.tar' \
-          --delete \
-          ./* "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur/" 
+         sshpass -p "${{ secrets.VPS_PASSWORD }}" rsync -avz \
+            -o StrictHostKeyChecking=no \ 
+            --exclude '.git' \
+            --exclude 'ranchdubonheur.tar' \
+            --delete \
+            ./* "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur/"
+
 
     - name: SSH dans le VPS et déployer
       env:
