@@ -25,15 +25,17 @@ jobs:
 
     - name: Définir les permissions sur le fichier tar
       run: chmod 777 ranchdubonheur.tar
+    
+    - name: Installer rsync
+      run: sudo apt-get update && sudo apt-get install -y rsync
 
-    - name: Copier le fichier tar Docker vers le serveur
-      run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no ranchdubonheur.tar "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur.tar"
-
-    - name: Créer le répertoire sur le serveur
-      run: sshpass -p "${{ secrets.VPS_PASSWORD }}" ssh -o StrictHostKeyChecking=no "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}" "mkdir -p /tmp/ranchdubonheur"
-
-    - name: Copier tous les fichiers de l'application vers le serveur
-      run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no -r ./* "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur/"
+    - name: Synchroniser les fichiers avec le serveur
+      run: |
+        sshpass -p "${{ secrets.VPS_PASSWORD }}" rsync -avz \
+          --exclude '.git' \
+          --exclude 'ranchdubonheur.tar' \
+          --delete \
+          ./* "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur/" 
 
     - name: SSH dans le VPS et déployer
       env:
