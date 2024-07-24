@@ -2,7 +2,7 @@ name: CI/CD RanchDuBonheur
 
 on:
   push:
-    branches: [master]
+    branches: [ master ]
 
 jobs:
   build-and-deploy:
@@ -12,59 +12,53 @@ jobs:
       packages: write
 
     steps:
-      - name: Installer sshpass
-        run: sudo apt-get update && sudo apt-get install -y sshpass
+    - uses: actions/checkout@v3
 
-      - name: Récupérer le code
-        uses: actions/checkout@v3
-        with:
-          clean: true  # Force un nettoyage du répertoire de travail
+    - name: Configurer Docker Buildx
+      uses: docker/setup-buildx-action@v2
 
-      - name: Configurer Docker Buildx
-        uses: docker/setup-buildx-action@v2
+    - name: Construire l'image Docker
+      run: docker build -t ranchdubonheur:latest .
 
-      - name: Construire l'image Docker
-        run: docker build -t ranchdubonheur:latest .
+    - name: Sauvegarder l'image Docker dans un fichier tar
+      run: docker save -o ranchdubonheur.tar ranchdubonheur:latest
 
-      - name: Sauvegarder l'image Docker dans un fichier tar
-        run: docker save -o ranchdubonheur.tar ranchdubonheur:latest
+    - name: Définir les permissions sur le fichier tar
+      run: chmod 777 ranchdubonheur.tar
 
-      - name: Définir les permissions sur le fichier tar
-        run: chmod 777 ranchdubonheur.tar
+    - name: Copier le fichier tar Docker vers le serveur
+      run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no ranchdubonheur.tar "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur.tar"
 
-      - name: Copier le fichier tar Docker vers le serveur
-        run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no ranchdubonheur.tar "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur.tar"
+    - name: Créer le répertoire sur le serveur
+      run: sshpass -p "${{ secrets.VPS_PASSWORD }}" ssh -o StrictHostKeyChecking=no "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}" "mkdir -p /tmp/ranchdubonheur"
 
-      - name: Créer le répertoire sur le serveur
-        run: sshpass -p "${{ secrets.VPS_PASSWORD }}" ssh -o StrictHostKeyChecking=no "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}" "mkdir -p /tmp/ranchdubonheur"
+    - name: Copier tous les fichiers de l'application vers le serveur
+      run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no -r ./* "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur/"
 
-      - name: Copier tous les fichiers de l'application vers le serveur
-        run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no -r ./* "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur/"
+    - name: SSH dans le VPS et déployer
+      env:
+        SSHPASS: ${{ secrets.VPS_PASSWORD }}
+      run: |
+        sshpass -e ssh -o StrictHostKeyChecking=no "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}" << EOF
+        cd /tmp
 
-      - name: SSH dans le VPS et déployer
-        env:
-          SSHPASS: ${{ secrets.VPS_PASSWORD }}
-        run: |
-          sshpass -e ssh -o StrictHostKeyChecking=no "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}" << EOF
-          cd /tmp
+        # Remove existing image and container
+        docker rmi ranchdubonheur:latest -f
+        docker rm ranchdubonheur -f
 
-          # Remove existing image and container
-          docker rmi ranchdubonheur:latest -f
-          docker rm ranchdubonheur -f
+        # Load the new image
+        docker load -i ranchdubonheur.tar
 
-          # Load the new image
-          docker load -i ranchdubonheur.tar
+        # Déployer l'application
+        cd /tmp/ranchdubonheur
 
-          # Déployer l'application
-          cd /tmp/ranchdubonheur
+        # Set environment variables (for database connection, etc.)
+        export DEFAULT_USERNAME=${{ secrets.DEFAULT_USERNAME }}
+        export DEFAULT_EMAIL=${{ secrets.DEFAULT_EMAIL }}
+        export DEFAULT_PASSWORD=${{ secrets.DEFAULT_PASSWORD }}
+        export SA_PASSWORD=${{ secrets.SA_PASSWORD }}
 
-          # Set environment variables (for database connection, etc.)
-          export DEFAULT_USERNAME=${{ secrets.DEFAULT_USERNAME }}
-          export DEFAULT_EMAIL=${{ secrets.DEFAULT_EMAIL }}
-          export DEFAULT_PASSWORD=${{ secrets.DEFAULT_PASSWORD }}
-          export SA_PASSWORD=${{ secrets.SA_PASSWORD }}
-
-          # Update to the latest images and rebuild/recreate containers
-          docker-compose pull
-          docker-compose up -d --build
-          EOF
+        # Update to the latest images and rebuild/recreate containers
+        docker-compose pull
+        docker-compose up -d --build
+        EOF

@@ -5,18 +5,18 @@ services:
     build: .
     container_name: ranchdubonheur
     environment:
+      - ASPNETCORE_ENVIRONMENT=Production 
+      - ConnectionStrings__DefaultConnection=Server=ranch_db;Database=RanchDuBonheurDb;User Id=SA;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True
       - DEFAULT_USERNAME=${DEFAULT_USERNAME}
       - DEFAULT_EMAIL=${DEFAULT_EMAIL}
       - DEFAULT_PASSWORD=${DEFAULT_PASSWORD}
-      - SA_PASSWORD=${SA_PASSWORD}
     depends_on:
       - ranch_db
     networks:
-      - nginx-proxy-network
+      - ranchdubonheur_default 
     ports:
-      - "43210:80"
-    entrypoint: ["dotnet", "RanchDuBonheur.dll", "--ConnectionStrings:DefaultConnection", "Server=ranch_db;Database=RanchDuBonheurDb;User Id=SA;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True"]
-
+      - "80:80"
+    
   ranch_db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
@@ -24,12 +24,12 @@ services:
       - ACCEPT_EULA=Y
     volumes:
       - sql_data:/var/opt/mssql
+    networks:
+      - ranchdubonheur_default
 
 volumes:
   sql_data:
 
 networks:
-  nginx-proxy-network:
-    external:
-      name: nginx-proxy-network
-
+  ranchdubonheur_default:
+    driver: bridge 

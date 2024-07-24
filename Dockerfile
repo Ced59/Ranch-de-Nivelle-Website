@@ -1,26 +1,17 @@
-# Base image avec le runtime ASP.NET Core 8.0
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+# Étape de construction
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
-EXPOSE 80
 
-# Image de construction avec le SDK .NET 8.0
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-WORKDIR /src
+# Copie et restauration des dépendances (csproj seulement pour optimiser le cache Docker)
+COPY *.csproj ./
+RUN dotnet restore
 
-# Copie et restauration des dépendances (packages NuGet)
-COPY ["RanchDuBonheur.csproj", "./"]
-RUN dotnet restore "RanchDuBonheur.csproj"
+# Copie du code source et publication
+COPY . ./
+RUN dotnet publish -c Release -o /app/out
 
-# Copie du code source et construction du projet
-COPY . .
-RUN dotnet build "RanchDuBonheur.csproj" -c Release -o /app/build
-
-# Publication du projet
-FROM build AS publish
-RUN dotnet publish "RanchDuBonheur.csproj" -c Release -o /app/publish /p:UseAppHost=false
-
-# Image finale avec l'application publiée
-FROM base AS final
+# Étape d'exécution
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "RanchDuBonheur.dll"]
