@@ -45,14 +45,27 @@ jobs:
         VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
       run: |
         sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} << EOF
+          set -e
+
+          # Créer le répertoire si nécessaire
           if [ ! -d "/ranchbonhueur_website" ]; then
             mkdir -p /ranchbonhueur_website
-            cd /ranchbonhueur_website
-            git clone https://github.com/Ced59/Ranch-de-Nivelle-Website.git .
+          fi
+          cd /ranchbonhueur_website
+
+          # Cloner ou mettre à jour le dépôt
+          if [ ! -d ".git" ]; then
+            git clone https://github.com/your-username/your-repo.git .
           else
-            cd /ranchbonhueur_website
             git pull origin main
           fi
-          docker-compose -f docker-compose.yml down
-          docker-compose -f docker-compose.yml up -d --build
+
+          # Vérifier la présence du fichier docker-compose.yml
+          if [ -f "docker-compose.yml" ]; then
+            docker-compose down
+            docker-compose up -d --build
+          else
+            echo "Erreur: Le fichier docker-compose.yml est introuvable."
+            exit 1
+          fi
         EOF
