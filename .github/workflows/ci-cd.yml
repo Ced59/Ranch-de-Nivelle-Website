@@ -55,7 +55,7 @@ jobs:
 
           # Cloner ou mettre à jour le dépôt
           if [ ! -d ".git" ]; then
-            git clone https://github.com/your-username/your-repo.git .
+            git clone https://github.com/Ced59/Ranch-de-Nivelle-Website.git .
           else
             git pull origin main
           fi
