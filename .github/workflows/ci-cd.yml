@@ -5,60 +5,48 @@ on:
     branches: [ master ]
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-    - name: Configurer Docker Buildx
-      uses: docker/setup-buildx-action@v2
+    - name: Set up .NET Core
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '6.0.x'
 
-    - name: Construire l'image Docker
-      run: docker build -t ranchdubonheur:latest .
+    - name: Build with dotnet
+      run: dotnet build --configuration Release
 
-    - name: Sauvegarder l'image Docker dans un fichier tar
-      run: docker save -o ranchdubonheur.tar ranchdubonheur:latest
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
 
-    - name: Définir les permissions sur le fichier tar
-      run: chmod 777 ranchdubonheur.tar
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
 
-    - name: Copier le fichier tar Docker vers le serveur
-      run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no ranchdubonheur.tar "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur.tar"
-
-    - name: Créer le répertoire sur le serveur
-      run: sshpass -p "${{ secrets.VPS_PASSWORD }}" ssh -o StrictHostKeyChecking=no "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}" "mkdir -p /tmp/ranchdubonheur"
-
-    - name: Copier tous les fichiers de l'application vers le serveur
-      run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no -r ./* "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur/"
-
-    - name: SSH dans le VPS et déployer
+    - name: Build and push Docker images
       env:
-        SSHPASS: ${{ secrets.VPS_PASSWORD }}
+        SA_PASSWORD: ${{ secrets.SA_PASSWORD }}
+        DEFAULT_USERNAME: ${{ secrets.DEFAULT_USERNAME }}
+        DEFAULT_EMAIL: ${{ secrets.DEFAULT_EMAIL }}
+        DEFAULT_PASSWORD: ${{ secrets.DEFAULT_PASSWORD }}
       run: |
-        sshpass -e ssh -o StrictHostKeyChecking=no "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}" << EOF
-        cd /tmp
+        docker-compose -f docker-compose.yml build
 
-        # Remove existing image and container
-        docker rmi ranchdubonheur:latest -f
-        docker rm ranchdubonheur -f
-
-        # Load the new image
-        docker load -i ranchdubonheur.tar
-
-        # Déployer l'application
-        cd /tmp/ranchdubonheur
-
-        # Set environment variables (for database connection, etc.)
-        export DEFAULT_USERNAME=${{ secrets.DEFAULT_USERNAME }}
-        export DEFAULT_EMAIL=${{ secrets.DEFAULT_EMAIL }}
-        export DEFAULT_PASSWORD=${{ secrets.DEFAULT_PASSWORD }}
-        export SA_PASSWORD=${{ secrets.SA_PASSWORD }}
-
-        # Update to the latest images and rebuild/recreate containers
-        docker-compose pull
-        docker-compose up -d --build
+    - name: Deploy to VPS
+      env:
+        VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
+      run: |
+        sshpass -p $VPS_PASSWORD ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }} << EOF
+          cd /ranchbonhueur_website
+          git pull origin main
+          docker-compose -f docker-compose.yml down
+          docker-compose -f docker-compose.yml up -d --build
         EOF

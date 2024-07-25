@@ -1,18 +1,22 @@
-# Étape de construction
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+# Use the official ASP.NET Core runtime as a parent image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
+EXPOSE 80
 
-# Copie et restauration des dépendances (csproj seulement pour optimiser le cache Docker)
-COPY *.csproj ./
-RUN dotnet restore
+# Use the SDK image to build the app
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+COPY ["RanchDuBonheur.csproj", "./"]
+RUN dotnet restore "RanchDuBonheur.csproj"
+COPY . .
+WORKDIR "/src/"
+RUN dotnet build "RanchDuBonheur.csproj" -c Release -o /app/build
 
-# Copie du code source et publication
-COPY . ./
-RUN dotnet publish -c Release -o /app/out
+FROM build AS publish
+RUN dotnet publish "RanchDuBonheur.csproj" -c Release -o /app/publish
 
-# Étape d'exécution
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+# Copy the app to the runtime image
+FROM base AS final
 WORKDIR /app
-COPY --from=build-env /app/out .
+COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "RanchDuBonheur.dll"]
-tea

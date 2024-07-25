@@ -1,35 +1,30 @@
 ﻿version: '3.8'
 
 services:
-  web:
-    build: .
-    container_name: ranchdubonheur
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production 
-      - ConnectionStrings__DefaultConnection=Server=ranch_db;Database=RanchDuBonheurDb;User Id=SA;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True
-      - DEFAULT_USERNAME=${DEFAULT_USERNAME}
-      - DEFAULT_EMAIL=${DEFAULT_EMAIL}
-      - DEFAULT_PASSWORD=${DEFAULT_PASSWORD}
-    depends_on:
-      - ranch_db
-    networks:
-      - ranchdubonheur_default 
+  ranch_web:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "80:80"
-    
-  ranch_db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    environment:
-      - SA_PASSWORD=${SA_PASSWORD}
-      - ACCEPT_EULA=Y
-    volumes:
-      - sql_data:/var/opt/mssql
+      - "40213:80"
     networks:
-      - ranchdubonheur_default
+      - ranch_network
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=ranch_db;Database=RanchDB;User=sa;Password=${SA_PASSWORD};
+      - DefaultUser__Username=${DEFAULT_USERNAME}
+      - DefaultUser__Email=${DEFAULT_EMAIL}
+      - DefaultUser__Password=${DEFAULT_PASSWORD}
 
-volumes:
-  sql_data:
+  ranch_db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      SA_PASSWORD: ${SA_PASSWORD}
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    networks:
+      - ranch_network
 
 networks:
-  ranchdubonheur_default:
-    driver: bridge 
+  ranch_network:
+    driver: bridge
