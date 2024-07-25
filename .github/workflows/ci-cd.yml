@@ -48,7 +48,7 @@ jobs:
           if [ ! -d "/ranchbonhueur_website" ]; then
             mkdir -p /ranchbonhueur_website
             cd /ranchbonhueur_website
-            git clone https://github.com/your-username/your-repo.git .
+            git clone https://github.com/Ced59/Ranch-de-Nivelle-Website.git .
           else
             cd /ranchbonhueur_website
             git pull origin main
