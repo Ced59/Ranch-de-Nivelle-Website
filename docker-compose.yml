@@ -16,6 +16,8 @@ services:
       - DefaultUser__Username=${DEFAULT_USERNAME}
       - DefaultUser__Email=${DEFAULT_EMAIL}
       - DefaultUser__Password=${DEFAULT_PASSWORD}
+    depends_on:
+      - db
 
   db:
     image: mcr.microsoft.com/mssql/server:2022-latest
