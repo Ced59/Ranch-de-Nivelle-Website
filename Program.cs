@@ -13,6 +13,12 @@ namespace RanchDuBonheur
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Configurer Kestrel pour écouter sur le port 92
+            builder.WebHost.ConfigureKestrel(serverOptions =>
+            {
+                serverOptions.ListenAnyIP(92); // Écoute sur le port 92 pour toutes les adresses IP
+            });
+
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<RanchDbContext>(options =>
@@ -55,12 +61,13 @@ namespace RanchDuBonheur
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            // Commenter app.UseHttpsRedirection() si Nginx s'occupe des redirections HTTPS
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
-            //app.UseAuthorization();
+            app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
