@@ -1,7 +1,7 @@
 # Utiliser l'image de base officielle de Microsoft pour ASP.NET Core
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 80
+EXPOSE 92
 
 # Étape de build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
