@@ -40,6 +40,7 @@ jobs:
           docker system prune -af
           docker load < /var/www/RanchDuBonheur/ranchdubonheur.tar
           cd /var/www/RanchDuBonheur
+          dos2unix entrypoint.sh
           chmod +x entrypoint.sh
           export SA_PASSWORD=${{ secrets.SA_PASSWORD }}
           export DEFAULT_USERNAME=${{ secrets.DEFAULT_USERNAME }}
