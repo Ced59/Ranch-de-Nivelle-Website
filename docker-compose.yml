@@ -1,30 +1,23 @@
 ﻿version: '3.8'
 
 services:
-  ranch_web:
+  webapp:
+    image: ranchdubonheur
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "40213:80"
-    networks:
-      - ranch_network
+      - "80:80"
     environment:
-      - ConnectionStrings__DefaultConnection=Server=ranch_db;Database=RanchDB;User=sa;Password=${SA_PASSWORD};
+      - ConnectionStrings__DefaultConnection=Server=db;Database=RanchDuBonheurDB;User=sa;Password=${SA_PASSWORD}
       - DefaultUser__Username=${DEFAULT_USERNAME}
       - DefaultUser__Email=${DEFAULT_EMAIL}
       - DefaultUser__Password=${DEFAULT_PASSWORD}
 
-  ranch_db:
-    image: mcr.microsoft.com/mssql/server:2019-latest
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
       SA_PASSWORD: ${SA_PASSWORD}
-      ACCEPT_EULA: "Y"
+      ACCEPT_EULA: Y
     ports:
       - "1433:1433"
-    networks:
-      - ranch_network
-
-networks:
-  ranch_network:
-    driver: bridge

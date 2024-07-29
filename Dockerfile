@@ -1,21 +1,22 @@
-# Use the official ASP.NET Core runtime as a parent image
+# Utiliser l'image de base officielle de Microsoft pour ASP.NET Core
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
 
-# Use the SDK image to build the app
+# Étape de build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["RanchDuBonheur.csproj", "./"]
-RUN dotnet restore "RanchDuBonheur.csproj"
+COPY ["RanchDuBonheur/RanchDuBonheur.csproj", "RanchDuBonheur/"]
+RUN dotnet restore "RanchDuBonheur/RanchDuBonheur.csproj"
 COPY . .
-WORKDIR "/src/"
+WORKDIR "/src/RanchDuBonheur"
 RUN dotnet build "RanchDuBonheur.csproj" -c Release -o /app/build
 
+# Étape de publication
 FROM build AS publish
 RUN dotnet publish "RanchDuBonheur.csproj" -c Release -o /app/publish
 
-# Copy the app to the runtime image
+# Étape finale
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
