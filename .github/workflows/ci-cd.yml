@@ -38,4 +38,8 @@ jobs:
         script: |
           docker load < /var/www/RanchDuBonheur/ranchdubonheur.tar
           cd /var/www/RanchDuBonheur
+          export SA_PASSWORD=${{ secrets.SA_PASSWORD }}
+          export DEFAULT_USERNAME=${{ secrets.DEFAULT_USERNAME }}
+          export DEFAULT_EMAIL=${{ secrets.DEFAULT_EMAIL }}
+          export DEFAULT_PASSWORD=${{ secrets.DEFAULT_PASSWORD }}
           docker-compose up -d

@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "8082:80"
     environment:
       - ConnectionStrings__DefaultConnection=Server=db;Database=RanchDuBonheurDB;User=sa;Password=${SA_PASSWORD}
       - DefaultUser__Username=${DEFAULT_USERNAME}
