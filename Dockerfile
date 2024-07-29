@@ -6,12 +6,11 @@ EXPOSE 80
 # Étape de build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-# Assurez-vous que le chemin dans COPY est correct; ajustez selon la structure de votre projet
-COPY ["RanchDuBonheur/RanchDuBonheur.csproj", "RanchDuBonheur/"]
-RUN dotnet restore "RanchDuBonheur/RanchDuBonheur.csproj"
-# Assurez-vous que cette COPY copie tous les fichiers nécessaires à partir de votre répertoire de travail local
+# Copier le fichier csproj et restaurer les dépendances
+COPY RanchDuBonheur.csproj .
+RUN dotnet restore "RanchDuBonheur.csproj"
+# Copier le reste des fichiers du projet
 COPY . .
-WORKDIR "/src/RanchDuBonheur"
 RUN dotnet build "RanchDuBonheur.csproj" -c Release -o /app/build
 
 # Étape de publication
