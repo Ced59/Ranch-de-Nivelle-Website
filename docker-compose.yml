@@ -10,6 +10,7 @@ services:
       - "8082:80"
     networks:
       - ranch-net
+      - nginx-proxy-network
     environment:
       - ConnectionStrings__DefaultConnection=Server=db;Database=RanchDuBonheurDB;User=sa;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True;
       - DefaultUser__Username=${DEFAULT_USERNAME}
@@ -30,3 +31,5 @@ networks:
   ranch-net:
     driver: bridge
     name: ranch-net
+  nginx-proxy-network:
+    external: true
