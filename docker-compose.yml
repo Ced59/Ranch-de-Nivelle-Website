@@ -8,8 +8,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8082:80"
+    networks:
+      - ranch-net
     environment:
-      - ConnectionStrings__DefaultConnection=Server=db;Database=RanchDuBonheurDB;User=sa;Password=${SA_PASSWORD}
+      - ConnectionStrings__DefaultConnection=Server=db;Database=RanchDuBonheurDB;User=sa;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True;
       - DefaultUser__Username=${DEFAULT_USERNAME}
       - DefaultUser__Email=${DEFAULT_EMAIL}
       - DefaultUser__Password=${DEFAULT_PASSWORD}
@@ -21,3 +23,10 @@ services:
       ACCEPT_EULA: Y
     ports:
       - "1433:1433"
+    networks:
+      - ranch-net
+
+networks:
+  ranch-net:
+    driver: bridge
+    name: ranch-net
