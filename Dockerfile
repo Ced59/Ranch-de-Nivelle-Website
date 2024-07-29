@@ -6,8 +6,8 @@ EXPOSE 80
 # Étape de build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["RanchDuBonheur/RanchDuBonheur.csproj", "RanchDuBonheur/"]
-RUN dotnet restore "RanchDuBonheur/RanchDuBonheur.csproj"
+COPY ["RanchDuBonheur.csproj", "RanchDuBonheur/"]
+RUN dotnet restore "RanchDuBonheur.csproj"
 COPY . .
 WORKDIR "/src/RanchDuBonheur"
 RUN dotnet build "RanchDuBonheur.csproj" -c Release -o /app/build
