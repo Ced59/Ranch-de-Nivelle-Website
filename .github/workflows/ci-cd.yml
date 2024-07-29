@@ -36,8 +36,7 @@ jobs:
         username: ${{ secrets.VPS_USERNAME }}
         password: ${{ secrets.VPS_PASSWORD }}
         script: |
-          docker rm -f $(docker ps -aq --filter ancestor=ranchdubonheur:latest) || true
-          docker rmi ranchdubonheur:latest || true
+          docker system prune -af
           docker load < /var/www/RanchDuBonheur/ranchdubonheur.tar
           cd /var/www/RanchDuBonheur
           export SA_PASSWORD=${{ secrets.SA_PASSWORD }}
