@@ -67,10 +67,13 @@ namespace RanchDuBonheur
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
-            // Ensure the database is created
+            // Ensure the database is created and apply any pending migrations
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
+                var dbContext = services.GetRequiredService<RanchDbContext>();
+                dbContext.Database.Migrate(); // Apply migrations
+
                 try
                 {
                     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
