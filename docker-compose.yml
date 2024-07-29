@@ -12,7 +12,7 @@ services:
       - ranch-net
       - nginx-proxy-network
     environment:
-      - ConnectionStrings__DefaultConnection=Server=185.158.107.198,1433;Database=RanchDuBonheurDB;User=sa;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True;
+      - ConnectionStrings__DefaultConnection=Server=database.ranchdubonheur.fr;Database=RanchDuBonheurDB;User=sa;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True;
       - DefaultUser__Username=${DEFAULT_USERNAME}
       - DefaultUser__Email=${DEFAULT_EMAIL}
       - DefaultUser__Password=${DEFAULT_PASSWORD}
