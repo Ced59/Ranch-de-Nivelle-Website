@@ -28,6 +28,7 @@ services:
       - "1433:1433"
     networks:
       - ranch-net
+      - nginx-proxy-network
 
 networks:
   ranch-net:
