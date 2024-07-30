@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
+using RanchDuBonheur.Services.Interfaces;
 
 namespace RanchDuBonheur.Controllers
 {
@@ -8,10 +9,12 @@ namespace RanchDuBonheur.Controllers
     public class ArtistsController : Controller
     {
         private readonly RanchDbContext _context;
+        private readonly IFacebookLinkService _facebookLinkService;
 
-        public ArtistsController(RanchDbContext context)
+        public ArtistsController(RanchDbContext context, IFacebookLinkService facebookLinkService)
         {
             _context = context;
+            _facebookLinkService = facebookLinkService;
         }
 
         [Route("accueil")]
@@ -34,6 +37,12 @@ namespace RanchDuBonheur.Controllers
                     TempData["Error"] = "Artiste non trouvé";
                     return RedirectToAction("Index");
                 }
+
+                var absoluteUri = _facebookLinkService.BuildAbsoluteUri(HttpContext.Request);
+                ViewData["OG:Url"] = absoluteUri;
+                ViewData["OG:Image"] = "https://www.ranchdubonheur.fr" + artist.PhotoUrl;
+                ViewData["OG:Description"] = artist.Name + " : Un artiste du Ranch du Bonheur";
+
                 return View(artist);
             }
             else
