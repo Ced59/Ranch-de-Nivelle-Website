@@ -71,7 +71,7 @@
                                 @if (!@meal.Commentaires.IsNullOrEmpty())
                                 {
                                     <strong>Infos complémentaires</strong>
-                                    <p class="card-text">@meal.Commentaires</p>
+                                    <p class="card-text">@Html.FormatWithLineBreaks(meal.Commentaires)</p>
                                 }
                                 <br/>
                                 <hr/>
