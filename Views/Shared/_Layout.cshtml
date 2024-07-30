@@ -4,6 +4,22 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Ranch du Bonheur de Nivelle</title>
+    @if (!string.IsNullOrEmpty(@ViewData["Title"]?.ToString()))
+    {
+        <meta property="og:title" content="@ViewData["Title"] - Ranch du Bonheur de Nivelle" />
+    }
+    @if (!string.IsNullOrEmpty(ViewData["OG:Description"]?.ToString()))
+    {
+        <meta property="og:description" content="@ViewData["OG:Description"]" />
+    }
+    @if (!string.IsNullOrEmpty(ViewData["OG:Image"]?.ToString()))
+    {
+        <meta property="og:image" content="@ViewData["OG:Image"]" />
+    }
+    @if (!string.IsNullOrEmpty(ViewData["OG:Url"]?.ToString()))
+    {
+        <meta property="og:url" content="@ViewData["OG:Url"]" />
+    }
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/bootstrap-icons/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />

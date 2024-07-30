@@ -1,5 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Accueil";
+    var currentUrl = ViewData["OG:Url"] as string;
+    var facebookShareUrl = $"https://www.facebook.com/sharer/sharer.php?u={Uri.EscapeDataString(currentUrl)}";
 }
 
 <div class="container">
@@ -29,4 +31,10 @@
 <div class="text-center mt-4">
     <div class="info-text">Pour tout renseignement et réservation, appelez le</div>
     <p class="phone-number"><a href="tel:+33642858026">06 42 85 80 26</a></p>
+</div>
+
+<div class="text-center">
+    <a href="@facebookShareUrl" target="_blank" class="btn btn-social btn-facebook">
+        <i class="bi bi-facebook"></i> Partager sur Facebook
+    </a>
 </div>

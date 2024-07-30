@@ -80,7 +80,11 @@
                                 <ul>
                                     @foreach (var artist in meal.MealArtists.Select(ma => ma.Artist))
                                     {
-                                        <li class="mt-2">@artist.Name</li>
+                                        <li class="mt-2">
+                                            <a class="theme-link" asp-controller="Artists" asp-action="Artist" asp-route-id="@artist.Id">
+                                                @artist.Name
+                                            </a>
+                                        </li>
                                     }
                                 </ul>
                             </div>
