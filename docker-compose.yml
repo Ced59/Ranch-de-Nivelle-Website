@@ -24,6 +24,8 @@ services:
     environment:
       SA_PASSWORD: ${SA_PASSWORD}
       ACCEPT_EULA: Y
+    volumes:
+      - mssql_data:/var/opt/mssql
     ports:
       - "1433:1433"
     networks:
@@ -36,3 +38,7 @@ networks:
     name: ranch-net
   nginx-proxy-network:
     external: true
+
+volumes:
+  mssql_data:
+    driver: local
