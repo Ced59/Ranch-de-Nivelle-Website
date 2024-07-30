@@ -11,6 +11,8 @@ services:
     networks:
       - ranch-net
       - nginx-proxy-network
+    volumes:
+      - webapp_wwwroot:/app/wwwroot
     environment:
       - ConnectionStrings__DefaultConnection=Server=database.ranchdubonheur.fr;Database=RanchDuBonheurDB;User=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;
       - DefaultUser__Username=${DEFAULT_USERNAME}
@@ -41,4 +43,6 @@ networks:
 
 volumes:
   mssql_data:
+    driver: local
+  webapp_wwwroot:
     driver: local
