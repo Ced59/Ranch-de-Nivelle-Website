@@ -2,7 +2,7 @@
 
 namespace RanchDuBonheur.Services.Implementations;
 
-public class FacebookLinkService : IFacebookLinkService
+public class LinkService : ILinkService
 {
     public string BuildAbsoluteUri(HttpRequest request)
     {
@@ -13,5 +13,10 @@ public class FacebookLinkService : IFacebookLinkService
             request.PathBase.ToUriComponent(),
             request.Path.ToUriComponent(),
             request.QueryString.ToUriComponent());
+    }
+
+    public string BuildFacebookShareUrl(string abloluteUri)
+    {
+        return $"https://www.facebook.com/sharer/sharer.php?u={Uri.EscapeDataString(abloluteUri)}";
     }
 }

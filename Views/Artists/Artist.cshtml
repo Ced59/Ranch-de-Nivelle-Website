@@ -5,8 +5,7 @@
     ViewBag.Title = @Model.Name;
     Layout = "_Layout";
     var artist = Model;
-    var currentUrl = ViewData["OG:Url"] as string;
-    var facebookShareUrl = $"https://www.facebook.com/sharer/sharer.php?u={Uri.EscapeDataString(currentUrl)}";
+    var facebookShareUrl = ViewData["FbShareUrl"] as string;
 }
 
 <div class="container">

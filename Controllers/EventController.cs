@@ -8,19 +8,12 @@ using System.Threading.Tasks;
 
 namespace RanchDuBonheur.Controllers
 {
-    public class EventController : Controller
+    public class EventController(RanchDbContext context) : Controller
     {
-        private readonly RanchDbContext _context;
-
-        public EventController(RanchDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<IActionResult> Index(bool showPast = false)
         {
             var today = DateOnly.FromDateTime(DateTime.Today);
-            var meals = await _context.Meals
+            var meals = await context.Meals
                 .Include(m => m.MealDishes)
                 .ThenInclude(md => md.Dish)
                 .Include(m => m.MealArtists)

@@ -1,6 +1,7 @@
 ﻿namespace RanchDuBonheur.Services.Interfaces;
 
-public interface IFacebookLinkService
+public interface ILinkService
 {
     string BuildAbsoluteUri(HttpRequest request);
+    string BuildFacebookShareUrl(string abloluteUri);
 }

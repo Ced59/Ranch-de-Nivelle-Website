@@ -5,20 +5,13 @@ using RanchDuBonheur.Services.Interfaces;
 
 namespace RanchDuBonheur.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(ILogger<HomeController> logger, ILinkService linkService) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly IFacebookLinkService _facebookLinkService;
-
-        public HomeController(ILogger<HomeController> logger, IFacebookLinkService facebookLinkService)
-        {
-            _logger = logger;
-            _facebookLinkService = facebookLinkService;
-        }
+        private readonly ILogger<HomeController> _logger = logger;
 
         public IActionResult Index()
         {
-            var absoluteUri = _facebookLinkService.BuildAbsoluteUri(HttpContext.Request);
+            var absoluteUri = linkService.BuildAbsoluteUri(HttpContext.Request);
             ViewData["OG:Url"] = absoluteUri;
             ViewData["OG:Image"] = "https://www.ranchdubonheur.fr/images/home/PHOTO-LA-LOUVIERE-FRANCIS-FROISART.jpg";
             ViewData["OG:Description"] = "Accueil du site du Ranch du Bonheur";

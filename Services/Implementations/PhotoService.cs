@@ -2,15 +2,8 @@
 
 namespace RanchDuBonheur.Services.Implementations
 {
-    public class PhotoService : IPhotoService
+    public class PhotoService(ImageProcessingService imageProcessingService) : IPhotoService
     {
-        private readonly ImageProcessingService _imageProcessingService;
-
-        public PhotoService(ImageProcessingService imageProcessingService)
-        {
-            _imageProcessingService = imageProcessingService;
-        }
-
         public async Task<(bool IsSuccess, string PhotoPath)> UploadPhotoAsync(string name, IFormFile photo, string folder)
         {
             var safeName = name.Replace(" ", "");
@@ -28,10 +21,10 @@ namespace RanchDuBonheur.Services.Implementations
                 await photo.CopyToAsync(stream);
             }
 
-            var resizedPath = await _imageProcessingService.ResizeAndCompressImageAsync(filePath, 100);
+            var resizedPath = await imageProcessingService.ResizeAndCompressImageAsync(filePath, 100);
             if (filePath != resizedPath)
             {
-                _imageProcessingService.DeleteFile(filePath);
+                imageProcessingService.DeleteFile(filePath);
             }
 
             return (true, $"/images/{folder}/{fileName}");
@@ -42,7 +35,7 @@ namespace RanchDuBonheur.Services.Implementations
             var fullPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", photoUrl);
             try
             {
-                _imageProcessingService.DeletePhoto(fullPath);
+                imageProcessingService.DeletePhoto(fullPath);
                 return true;
             }
             catch (Exception)

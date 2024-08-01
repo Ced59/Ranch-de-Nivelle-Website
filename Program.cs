@@ -47,7 +47,7 @@ namespace RanchDuBonheur
 
             builder.Services.AddScoped<ImageProcessingService>();
             builder.Services.AddScoped<IPhotoService, PhotoService>();
-            builder.Services.AddScoped<IFacebookLinkService, FacebookLinkService>();
+            builder.Services.AddScoped<ILinkService, LinkService>();
 
             var app = builder.Build();
 
