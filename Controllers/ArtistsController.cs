@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
+using RanchDuBonheur.Models.ViewModels;
 using RanchDuBonheur.Services.Interfaces;
 
 namespace RanchDuBonheur.Controllers
@@ -22,18 +23,38 @@ namespace RanchDuBonheur.Controllers
         {
             if (Guid.TryParse(id, out var artistId))
             {
-                var artist = await context.Artists.SingleOrDefaultAsync(artist => artist.Id == artistId);
+                var today = DateOnly.FromDateTime(DateTime.Today);
+
+                var artist = await context.Artists
+                    .Include(a => a.MealArtists)
+                    .ThenInclude(ma => ma.Meal)
+                    .Where(a => a.Id == artistId)
+                    .Select(a => new ArtistDetailsViewModel
+                    {
+                        Artist = a,
+                        Meals = a.MealArtists
+                            .Where(ma => ma.Meal.Date >= today)
+                            .Select(ma => new MealInfo
+                            {
+                                Date = ma.Meal.Date,
+                                Id = ma.Meal.Id
+                            })
+                            .ToList()
+                    })
+                    .SingleOrDefaultAsync();
+
                 if (artist == null)
                 {
                     TempData["Error"] = "Artiste non trouvé";
                     return RedirectToAction("Index");
                 }
 
+
                 var absoluteUri = linkService.BuildAbsoluteUri(HttpContext.Request);
                 ViewData["OG:Url"] = absoluteUri;
                 ViewData["FbShareUrl"] = linkService.BuildFacebookShareUrl(absoluteUri);
-                ViewData["OG:Image"] = "https://www.ranchdubonheur.fr" + artist.PhotoUrl;
-                ViewData["OG:Description"] = artist.Name + " : Un artiste du Ranch du Bonheur";
+                ViewData["OG:Image"] = "https://www.ranchdubonheur.fr" + artist.Artist.PhotoUrl;
+                ViewData["OG:Description"] = artist.Artist.Name + " : Un artiste du Ranch du Bonheur";
 
                 return View(artist);
             }

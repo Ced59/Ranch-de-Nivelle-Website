@@ -329,5 +329,9 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
 .artist-meals-card-img {
     object-fit: cover;
     height: 200px;
-    padding: 10px; /* Ajout d'un padding pour ne pas toucher les bords */
+    padding: 10px; 
+}
+
+.custom-table tr, .custom-table td {
+    border-color: #8B572A;
 }

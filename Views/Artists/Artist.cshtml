@@ -1,8 +1,8 @@
 ﻿@using RanchDuBonheur.Extensions
-@model RanchDuBonheur.Models.Pocos.Artists.Artist
+@model RanchDuBonheur.Models.ViewModels.ArtistDetailsViewModel
 
 @{
-    ViewBag.Title = @Model.Name;
+    ViewBag.Title = @Model.Artist.Name;
     Layout = "_Layout";
     var artist = Model;
     var facebookShareUrl = ViewData["FbShareUrl"] as string;
@@ -11,19 +11,62 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <div class="card mt-4 cards-color no-hover-effect">
+            <div class="card mt-4 cards-color no-hover-effect custom-table">
                 <div class="card-header text-center">
-                    <h1>@artist.Name</h1>
+                    <h1>@artist.Artist.Name</h1>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-4 p-1 rounded d-flex align-items-center">
-                            <img src="@artist.PhotoUrl" alt="Photo de @artist.Name" class="img-fluid mx-auto">
+                            <img src="@artist.Artist.PhotoUrl" alt="Photo de @artist.Artist.Name" class="img-fluid mx-auto">
                         </div>
                         <div class="col-md-8 p-4 justified-text">
-                            <p>@Html.FormatWithLineBreaks(artist.Description)</p>
+                            <p>@Html.FormatWithLineBreaks(artist.Artist.Description)</p>
                         </div>
                     </div>
+
+                    <div class="col-12 col-md-8 mx-auto">
+                        @if (artist.Meals != null && artist.Meals.Any())
+                        {
+                            <table class="table mt-4">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th colspan="2" class="text-center">Prochaines prestations de @artist.Artist.Name au Ranch</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var meal in artist.Meals)
+                                    {
+                                        <tr>
+                                            <td class="align-middle">
+                                                @meal.Date.GetCapitalizedDate()
+                                            </td>
+                                            <td class="align-middle text-center">
+                                                <a asp-controller="Event" asp-action="Event" asp-route-idEvent="@meal.Id" class="btn btn-primary">
+                                                    Voir le repas
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        else
+                        {
+                            <table class="table mt-4 custom-table">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th colspan="2" class="text-center">Pas de prestation prévue de @artist.Artist.Name pour le moment.</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        }
+                    </div>
+
+
+                    <br />
+                    <hr />
+
 
                     <div class="text-center mt-2 mb-2">
                         <a href="@facebookShareUrl" target="_blank" class="btn btn-social btn-facebook">
