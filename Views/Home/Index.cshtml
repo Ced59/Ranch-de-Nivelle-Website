@@ -1,7 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Accueil";
-    var currentUrl = ViewData["OG:Url"] as string;
-    var facebookShareUrl = $"https://www.facebook.com/sharer/sharer.php?u={Uri.EscapeDataString(currentUrl)}";
+    var facebookShareUrl = ViewData["FbShareUrl"] as string;
 }
 
 <div class="container">

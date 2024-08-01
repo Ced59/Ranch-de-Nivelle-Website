@@ -24,14 +24,15 @@
                             <p>@Html.FormatWithLineBreaks(artist.Description)</p>
                         </div>
                     </div>
+
+                    <div class="text-center mt-2 mb-2">
+                        <a href="@facebookShareUrl" target="_blank" class="btn btn-social btn-facebook">
+                            <i class="bi bi-facebook"></i> Partager sur Facebook
+                        </a>
+                    </div>
                 </div>
             </div>
             <div class="text-center mt-4">
-
-                <a href="@facebookShareUrl" target="_blank" class="btn btn-social btn-facebook">
-                    <i class="bi bi-facebook"></i> Partager sur Facebook
-                </a>
-
                 <a href="@Url.Action("Index", "Artists")" class="btn btn-primary">Retour</a>
             </div>
         </div>

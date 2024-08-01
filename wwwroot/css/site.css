@@ -322,3 +322,12 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
 
 
 
+.normal-text {
+    color: #593815; 
+}
+
+.artist-meals-card-img {
+    object-fit: cover;
+    height: 200px;
+    padding: 10px; /* Ajout d'un padding pour ne pas toucher les bords */
+}

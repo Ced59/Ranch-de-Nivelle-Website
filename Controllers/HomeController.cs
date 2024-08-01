@@ -13,6 +13,7 @@ namespace RanchDuBonheur.Controllers
         {
             var absoluteUri = linkService.BuildAbsoluteUri(HttpContext.Request);
             ViewData["OG:Url"] = absoluteUri;
+            ViewData["FbShareUrl"] = linkService.BuildFacebookShareUrl(absoluteUri);
             ViewData["OG:Image"] = "https://www.ranchdubonheur.fr/images/home/PHOTO-LA-LOUVIERE-FRANCIS-FROISART.jpg";
             ViewData["OG:Description"] = "Accueil du site du Ranch du Bonheur";
 

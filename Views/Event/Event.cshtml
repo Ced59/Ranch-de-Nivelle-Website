@@ -1,0 +1,78 @@
+﻿@using RanchDuBonheur.Extensions
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.IdentityModel.Tokens
+@using RanchDuBonheur.Models.Pocos.Meals
+@model RanchDuBonheur.Models.Pocos.Meals.Meal
+
+@{
+    var meal = Model;
+    ViewData["Title"] = "Repas du " + meal.Date.GetCapitalizedDate();
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var facebookShareUrl = ViewData["FbShareUrl"] as string;
+}
+
+<div class="card text-card-color cards-color mt-3 h-100 no-hover-effect">
+    <div class="card-header">
+
+        <div class="artist-image-container d-flex justify-content-center align-items-center">
+            <img src="~/images/home/resized_RanchDuBonheur.jpg" alt="Le Ranch de Nivelle" class="d-block img-fluid">
+        </div>
+    </div>
+
+    <div class="card-body">
+        <h3 class="card-title text-center">@meal.Date.GetCapitalizedDate()</h3>
+        <h4 class="card-subtitle mb-2 mt-3 text-center">Prix: @meal.Price €</h4>
+        <h5 class="text-center mt-3 mb-4">Boissons à volonté!!</h5>
+        <div class="text-center">
+            @foreach (var category in Enum.GetValues(typeof(DishCategory)).Cast<DishCategory>())
+            {
+                var dishesInCategory = meal.MealDishes.Where(md => md.Dish.Category == category).Select(md => md.Dish).ToList();
+                if (dishesInCategory.Any())
+                {
+                    <strong>@category.GetDescription()</strong>
+                    <ul>
+                        @foreach (var dish in dishesInCategory)
+                        {
+                            <li>@dish.Name</li>
+                        }
+                    </ul>
+                }
+            }
+
+            @if (!@meal.Commentaires.IsNullOrEmpty())
+            {
+                <strong>Infos complémentaires</strong>
+                <p class="card-text">@Html.FormatWithLineBreaks(meal.Commentaires)</p>
+            }
+            <br />
+            <div class="text-center">
+                <a href="@facebookShareUrl" target="_blank" class="btn btn-social btn-facebook">
+                    <i class="bi bi-facebook"></i> Partager sur Facebook
+                </a>
+            </div>
+            <br/>
+            <hr />
+            <br />
+            <strong>Avec:</strong>
+            <div class="row mt-4">
+                @foreach (var artist in meal.MealArtists.Select(ma => ma.Artist))
+                {
+                    <div class="col-sm-12 col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100 shadow-sm border-1 rounded cards-color">
+                            <a asp-controller="Artists" asp-action="Artist" asp-route-id="@artist.Id" class="text-decoration-none theme-link">
+                                <img src="@artist.PhotoUrl" class="card-img-top artist-meals-card-img" alt="Image de l'artiste">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">@artist.Name</h5>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="text-center mt-4">
+    <a href="@Url.Action("Index", "Event")" class="btn btn-primary">Retour</a>
+</div>
