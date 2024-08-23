@@ -44,6 +44,34 @@ namespace RanchDuBonheur.Data
                 entity.Property(a => a.PhotoUrl)
                     .HasMaxLength(255)
                     .HasColumnType("nvarchar(255)");
+
+                entity.HasMany(a => a.Videos)
+                    .WithOne(v => v.Artist) 
+                    .HasForeignKey(v => v.ArtistId) 
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<Video>(entity =>
+            {
+                entity.ToTable("Videos");
+                entity.HasKey(v => v.Id);
+
+                entity.Property(v => v.Id)
+                    .HasColumnType("uniqueidentifier")
+                    .IsRequired();
+
+                entity.Property(v => v.Title)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .HasColumnType("nvarchar(100)");
+
+                entity.Property(v => v.Description)
+                    .HasMaxLength(7000)
+                    .HasColumnType("nvarchar(7000)");
+
+                entity.Property(v => v.YtLink)
+                    .HasMaxLength(255)
+                    .HasColumnType("nvarchar(255)");
             });
 
             // Configure Dish entity

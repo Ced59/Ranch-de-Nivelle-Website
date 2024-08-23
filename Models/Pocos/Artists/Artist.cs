@@ -17,5 +17,6 @@ namespace RanchDuBonheur.Models.Pocos.Artists
         public string PhotoUrl { get; set; } = "";
 
         public ICollection<MealArtist> MealArtists { get; set; } = new List<MealArtist>();
+        public ICollection<Video> Videos { get; set; } = new List<Video>();
     }
 }
