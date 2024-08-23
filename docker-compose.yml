@@ -1,35 +1,48 @@
 ﻿version: '3.8'
 
 services:
-  web:
-    build: .
-    container_name: ranchdubonheur
-    environment:
-      - DEFAULT_USERNAME=${DEFAULT_USERNAME}
-      - DEFAULT_EMAIL=${DEFAULT_EMAIL}
-      - DEFAULT_PASSWORD=${DEFAULT_PASSWORD}
-      - SA_PASSWORD=${SA_PASSWORD}
-    depends_on:
-      - ranch_db
-    networks:
-      - nginx-network
+  webapp:
+    image: ranchdubonheur
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "43210:80"
-    entrypoint: ["dotnet", "RanchDuBonheur.dll", "--ConnectionStrings:DefaultConnection", "Server=ranch_db;Database=RanchDuBonheurDb;User Id=SA;Password=${SA_PASSWORD};Encrypt=False;TrustServerCertificate=True"]
+      - "92:92"
+    networks:
+      - ranch-net
+      - nginx-proxy-network
+    volumes:
+      - webapp_images:/app/wwwroot/images
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=database.ranchdubonheur.fr;Database=RanchDuBonheurDB;User=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;
+      - DefaultUser__Username=${DEFAULT_USERNAME}
+      - DefaultUser__Email=${DEFAULT_EMAIL}
+      - DefaultUser__Password=${DEFAULT_PASSWORD}
+    depends_on:
+      - db
 
-  ranch_db:
+  db:
     image: mcr.microsoft.com/mssql/server:2022-latest
     environment:
-      - SA_PASSWORD=${SA_PASSWORD}
-      - ACCEPT_EULA=Y
+      SA_PASSWORD: ${SA_PASSWORD}
+      ACCEPT_EULA: Y
     volumes:
-      - sql_data:/var/opt/mssql
-
-volumes:
-  sql_data:
+      - mssql_data:/var/opt/mssql
+    ports:
+      - "1433:1433"
+    networks:
+      - ranch-net
+      - nginx-proxy-network
 
 networks:
-  nginx-network:
-    external:
-      name: nginx-network
+  ranch-net:
+    driver: bridge
+    name: ranch-net
+  nginx-proxy-network:
+    external: true
 
+volumes:
+  mssql_data:
+    driver: local
+  webapp_images:
+    driver: local

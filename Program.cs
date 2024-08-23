@@ -13,6 +13,12 @@ namespace RanchDuBonheur
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Configurer Kestrel pour écouter sur le port 92
+            builder.WebHost.ConfigureKestrel(serverOptions =>
+            {
+                serverOptions.ListenAnyIP(92); // Écoute sur le port 92 pour toutes les adresses IP
+            });
+
             // Add services to the container.
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
             builder.Services.AddDbContext<RanchDbContext>(options =>
@@ -41,6 +47,7 @@ namespace RanchDuBonheur
 
             builder.Services.AddScoped<ImageProcessingService>();
             builder.Services.AddScoped<IPhotoService, PhotoService>();
+            builder.Services.AddScoped<ILinkService, LinkService>();
 
             var app = builder.Build();
 
@@ -55,7 +62,8 @@ namespace RanchDuBonheur
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            // Commenter app.UseHttpsRedirection() si Nginx s'occupe des redirections HTTPS
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -67,10 +75,13 @@ namespace RanchDuBonheur
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
-            // Ensure the database is created
+            // Ensure the database is created and apply any pending migrations
             using (var scope = app.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
+                var dbContext = services.GetRequiredService<RanchDbContext>();
+                dbContext.Database.Migrate(); // Apply migrations
+
                 try
                 {
                     var userManager = services.GetRequiredService<UserManager<IdentityUser>>();

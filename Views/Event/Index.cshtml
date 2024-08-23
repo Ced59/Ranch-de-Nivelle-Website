@@ -14,7 +14,7 @@
     <h1 class="text-center my-4">@(showPast ? "Repas Passés" : "Prochains Repas")</h1>
 
     <div class="d-flex justify-content-center mb-3">
-        <a asp-action="Index" asp-route-showPast="@(showPast ? false : true)" class="btn btn-primary">
+        <a asp-action="Index" asp-route-showPast="@(!showPast)" class="btn btn-primary">
             @(showPast ? "Voir les prochains repas" : "Voir les repas passés")
         </a>
     </div>
@@ -29,78 +29,54 @@
             @foreach (var meal in meals)
             {
                 <div class="col-md-4">
-                    <div class="card text-card-color cards-color mt-3 h-100 no-hover-effect">
-                        <div class="card-header">
-                            <div id="carouselArtist@meal.Id" class="carousel slide" data-ride="carousel" data-interval="4000">
-                                <div class="carousel-inner">
-                                    @{
-                                        bool isFirst = true;
-                                    }
-                                    @foreach (var artist in meal.MealArtists.Select(ma => ma.Artist))
-                                    {
-                                        <div class="carousel-item @(isFirst ? "active" : "")">
-                                            <div class="artist-image-container d-flex justify-content-center align-items-center">
-                                                <img src="@artist.PhotoUrl" class="d-block img-fluid">
+                    <div class="card h-100 shadow-sm border-3 rounded cards-color">
+                        <a asp-controller="Event" asp-action="Event" asp-route-idEvent="@meal.Id" class="text-decoration-none">
+                            <div class="card-header">
+                                <div id="carouselArtist@meal.Id" class="carousel slide" data-ride="carousel" data-interval="4000">
+                                    <div class="carousel-inner">
+                                        @{
+                                            bool isFirst = true;
+                                        }
+                                        @foreach (var artist in meal.MealArtists.Select(ma => ma.Artist))
+                                        {
+                                            <div class="carousel-item @(isFirst ? "active" : "")">
+                                                <div class="artist-image-container d-flex justify-content-center align-items-center">
+                                                    <img src="@artist.PhotoUrl" class="d-block img-fluid">
+                                                </div>
                                             </div>
-                                        </div>
-                                        isFirst = false;
-                                    }
+                                            isFirst = false;
+                                        }
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            <h3 class="card-title text-center">@GetCapitalizedDate(meal.Date)</h3>
-                            <h4 class="card-subtitle mb-2 mt-3 text-center">Prix: @meal.Price €</h4>
-                            <h5 class="text-center mt-3 mb-4">Boissons à volonté!!</h5>
-                            <div class="text-center">
-                                @foreach (var category in Enum.GetValues(typeof(RanchDuBonheur.Models.Pocos.Meals.DishCategory)).Cast<RanchDuBonheur.Models.Pocos.Meals.DishCategory>())
-                                {
-                                    var dishesInCategory = meal.MealDishes.Where(md => md.Dish.Category == category).Select(md => md.Dish).ToList();
-                                    if (dishesInCategory.Any())
-                                    {
-                                        <strong>@category.GetDescription()</strong>
-                                        <ul>
-                                            @foreach (var dish in dishesInCategory)
-                                            {
-                                                <li>@dish.Name</li>
-                                            }
-                                        </ul>
-                                    }
-                                }
-
-                                @if (!@meal.Commentaires.IsNullOrEmpty())
-                                {
-                                    <strong>Infos complémentaires</strong>
-                                    <p class="card-text">@meal.Commentaires</p>
-                                }
-                                <br/>
-                                <hr/>
-                                <br/>
-                                <strong>Avec:</strong>
-                                <ul>
-                                    @foreach (var artist in meal.MealArtists.Select(ma => ma.Artist))
-                                    {
-                                        <li class="mt-2">@artist.Name</li>
-                                    }
-                                </ul>
+                            <div class="card-body">
+                                <h3 class="card-title text-center text-decoration-none normal-text">@meal.Date.GetCapitalizedDate()</h3>
+                                <h4 class="card-subtitle mb-2 mt-3 text-center normal-text">Prix: @meal.Price €</h4>
+                                <h5 class="text-center mt-3 mb-4 normal-text">Boissons à volonté!!</h5>
+                                <div class="text-center normal-text">
+                                    <hr />
+                                    <strong>Avec:</strong>
+                                    <ul>
+                                        @foreach (var artist in meal.MealArtists.Select(ma => ma.Artist))
+                                        {
+                                            <li class="mt-2 normal-text">
+                                                @artist.Name
+                                            </li>
+                                        }
+                                    </ul>
+                                    <hr />
+                                    Cliquez pour plus de détails
+                                </div>
                             </div>
-                        </div>
+                        </a>
                     </div>
                 </div>
+
             }
         </div>
     }
 
 </div>
-
-@functions {
-    private string GetCapitalizedDate(DateOnly date)
-    {
-        var dateTime = date.ToDateTime(new TimeOnly(0));
-        var formattedDate = dateTime.ToString("dddd d MMMM yyyy", new System.Globalization.CultureInfo("fr-FR"));
-        return char.ToUpper(formattedDate[0]) + formattedDate.Substring(1);
-    }
-}
 
 @section Scripts {
     <script>

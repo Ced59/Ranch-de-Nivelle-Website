@@ -4,9 +4,44 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Ranch du Bonheur de Nivelle</title>
+    @if (!string.IsNullOrEmpty(@ViewData["Title"]?.ToString()))
+    {
+        <meta property="og:title" content="@ViewData["Title"] - Ranch du Bonheur de Nivelle" />
+    }
+    @if (!string.IsNullOrEmpty(ViewData["OG:Description"]?.ToString()))
+    {
+        <meta property="og:description" content="@ViewData["OG:Description"]" />
+    }
+    @if (!string.IsNullOrEmpty(ViewData["OG:Image"]?.ToString()))
+    {
+        <meta property="og:image" content="@ViewData["OG:Image"]" />
+    }
+    @if (!string.IsNullOrEmpty(ViewData["OG:Url"]?.ToString()))
+    {
+        <meta property="og:url" content="@ViewData["OG:Url"]" />
+    }
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/bootstrap-icons/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <!-- Matomo -->
+    <script>
+        var _paq = window._paq = window._paq || [];
+        /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function() {
+            var u="//www.matomo.cedric-caudron.com/";
+            _paq.push(['setTrackerUrl', u+'matomo.php']);
+            _paq.push(['setSiteId', '2']);
+            var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+            g.async=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+        })();
+    </script>
+    <!-- End Matomo Code -->
 </head>
 <body>
     <header>

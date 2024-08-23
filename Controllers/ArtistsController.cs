@@ -1,23 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
+using RanchDuBonheur.Models.ViewModels;
+using RanchDuBonheur.Services.Interfaces;
 
 namespace RanchDuBonheur.Controllers
 {
     [Route("artistes")]
-    public class ArtistsController : Controller
+    public class ArtistsController(RanchDbContext context, ILinkService linkService) : Controller
     {
-        private readonly RanchDbContext _context;
-
-        public ArtistsController(RanchDbContext context)
-        {
-            _context = context;
-        }
-
         [Route("accueil")]
         public async Task<IActionResult> Index()
         {
-            var artists = await _context.Artists.ToListAsync();
+            var artists = await context.Artists.ToListAsync();
 
             return View(artists);
         }
@@ -26,21 +21,46 @@ namespace RanchDuBonheur.Controllers
         [Route("detail")]
         public async Task<IActionResult> Artist(string id)
         {
-            if (Guid.TryParse(id, out Guid artistId))
+            if (Guid.TryParse(id, out var artistId))
             {
-                var artist = await _context.Artists.SingleOrDefaultAsync(artist => artist.Id == artistId);
+                var today = DateOnly.FromDateTime(DateTime.Today);
+
+                var artist = await context.Artists
+                    .Include(a => a.MealArtists)
+                    .ThenInclude(ma => ma.Meal)
+                    .Where(a => a.Id == artistId)
+                    .Select(a => new ArtistDetailsViewModel
+                    {
+                        Artist = a,
+                        Meals = a.MealArtists
+                            .Where(ma => ma.Meal.Date >= today)
+                            .Select(ma => new MealInfo
+                            {
+                                Date = ma.Meal.Date,
+                                Id = ma.Meal.Id
+                            })
+                            .ToList()
+                    })
+                    .SingleOrDefaultAsync();
+
                 if (artist == null)
                 {
                     TempData["Error"] = "Artiste non trouvé";
                     return RedirectToAction("Index");
                 }
+
+
+                var absoluteUri = linkService.BuildAbsoluteUri(HttpContext.Request);
+                ViewData["OG:Url"] = absoluteUri;
+                ViewData["FbShareUrl"] = linkService.BuildFacebookShareUrl(absoluteUri);
+                ViewData["OG:Image"] = "https://www.ranchdubonheur.fr" + artist.Artist.PhotoUrl;
+                ViewData["OG:Description"] = artist.Artist.Name + " : Un artiste du Ranch du Bonheur";
+
                 return View(artist);
             }
-            else
-            {
-                TempData["Error"] = "Requête invalide";
-                return RedirectToAction("Index");
-            }
+
+            TempData["Error"] = "Requête invalide";
+            return RedirectToAction("Index");
         }
 
     }

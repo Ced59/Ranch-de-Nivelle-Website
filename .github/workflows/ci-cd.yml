@@ -1,70 +1,49 @@
-name: CI/CD RanchDuBonheur
+name: CI-CD RanchDuBonheur
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
-
     steps:
-      - name: Installer sshpass
-        run: sudo apt-get update && sudo apt-get install -y sshpass
+    - uses: actions/checkout@v2
 
-      - name: Récupérer le code
-        uses: actions/checkout@v3
-        with:
-          clean: true  # Force un nettoyage du répertoire de travail
+    - name: Build Docker image
+      run: |
+        docker build -t ranchdubonheur .
+    
+    - name: Save Docker image
+      run: |
+        docker save ranchdubonheur:latest > ranchdubonheur.tar
 
-      - name: Configurer Docker Buildx
-        uses: docker/setup-buildx-action@v2
+    - name: Transfer Docker image and docker-compose file to server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USERNAME }}
+        password: ${{ secrets.VPS_PASSWORD }}
+        port: 22
+        source: "ranchdubonheur.tar, docker-compose.yml, entrypoint.sh"
+        target: "/var/www/RanchDuBonheur"
 
-      - name: Construire l'image Docker
-        run: docker build -t ranchdubonheur:latest .
-
-      - name: Sauvegarder l'image Docker dans un fichier tar
-        run: docker save -o ranchdubonheur.tar ranchdubonheur:latest
-
-      - name: Définir les permissions sur le fichier tar
-        run: chmod 777 ranchdubonheur.tar
-
-      - name: Copier le fichier tar Docker vers le serveur
-        run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no ranchdubonheur.tar "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur.tar"
-
-      - name: Créer le répertoire sur le serveur
-        run: sshpass -p "${{ secrets.VPS_PASSWORD }}" ssh -o StrictHostKeyChecking=no "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}" "mkdir -p /tmp/ranchdubonheur"
-
-      - name: Copier tous les fichiers de l'application vers le serveur
-        run: sshpass -p "${{ secrets.VPS_PASSWORD }}" scp -o StrictHostKeyChecking=no -r ./* "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}:/tmp/ranchdubonheur/"
-
-      - name: SSH dans le VPS et déployer
-        env:
-          SSHPASS: ${{ secrets.VPS_PASSWORD }}
-        run: |
-          sshpass -e ssh -o StrictHostKeyChecking=no "${{ secrets.VPS_USERNAME }}@${{ secrets.VPS_HOST }}" << EOF
-          cd /tmp
-
-          # Remove existing image and container
-          docker rmi ranchdubonheur:latest -f
-          docker rm ranchdubonheur -f
-
-          # Load the new image
-          docker load -i ranchdubonheur.tar
-
-          # Déployer l'application
-          cd /tmp/ranchdubonheur
-
-          # Set environment variables (for database connection, etc.)
+    - name: Load and run Docker image on server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.VPS_HOST }}
+        username: ${{ secrets.VPS_USERNAME }}
+        password: ${{ secrets.VPS_PASSWORD }}
+        script: |
+          docker-compose down
+          docker system prune -af
+          docker load < /var/www/RanchDuBonheur/ranchdubonheur.tar
+          cd /var/www/RanchDuBonheur
+          dos2unix entrypoint.sh
+          chmod +x entrypoint.sh
+          export SA_PASSWORD=${{ secrets.SA_PASSWORD }}
           export DEFAULT_USERNAME=${{ secrets.DEFAULT_USERNAME }}
           export DEFAULT_EMAIL=${{ secrets.DEFAULT_EMAIL }}
           export DEFAULT_PASSWORD=${{ secrets.DEFAULT_PASSWORD }}
-          export SA_PASSWORD=${{ secrets.SA_PASSWORD }}
-
-          # Update to the latest images and rebuild/recreate containers
-          docker-compose pull
-          docker-compose up -d --build
-          EOF
+          docker-compose up -d

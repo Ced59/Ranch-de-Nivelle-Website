@@ -5,13 +5,8 @@ using RanchDuBonheur.Models.Pocos.Meals;
 
 namespace RanchDuBonheur.Data
 {
-    public class RanchDbContext : IdentityDbContext
+    public class RanchDbContext(DbContextOptions<RanchDbContext> options) : IdentityDbContext(options)
     {
-        public RanchDbContext(DbContextOptions<RanchDbContext> options)
-            : base(options)
-        {
-        }
-
         public DbSet<Artist> Artists { get; set; }
         public DbSet<Dish> Dishes { get; set; }
         public DbSet<Meal> Meals { get; set; }

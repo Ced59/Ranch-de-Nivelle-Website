@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Accueil";
+    var facebookShareUrl = ViewData["FbShareUrl"] as string;
 }
 
 <div class="container">
@@ -30,3 +31,38 @@
     <div class="info-text">Pour tout renseignement et réservation, appelez le</div>
     <p class="phone-number"><a href="tel:+33642858026">06 42 85 80 26</a></p>
 </div>
+
+<div class="row mt-4 mb-4">
+    <div class="col-12 col-md-8 mx-auto">
+        <div id="mapid" class="border border-secondary rounded cards-color" style="height: 200px;"></div>
+    </div>
+</div>
+
+
+<div class="text-center">
+    <a href="@facebookShareUrl" target="_blank" class="btn btn-social btn-facebook">
+        <i class="bi bi-facebook"></i> Partager sur Facebook
+    </a>
+</div>
+
+
+
+
+        
+@section Scripts {
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('mapid').setView([50.45952414431575, 3.494811146368993], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        var marker = L.marker([50.45952414431575, 3.494811146368993]).addTo(map);
+        marker.bindPopup("<b>Le Ranch du Bonheur</b><br>300 Rte de Condé, 59230 Nivelle.<br><hr /><a href='https://maps.google.com/maps?daddr=50.45952414431575,3.494811146368993&directionsmode=driving' target='_blank'>Y aller avec Google Maps</a><br><a href='https://waze.com/ul?ll=50.45952414431575,3.494811146368993&navigate=yes' target='_blank'>Y aller avec Waze</a><br>").openPopup();
+    </script>
+
+}
+

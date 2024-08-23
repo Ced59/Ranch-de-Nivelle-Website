@@ -1,25 +1,23 @@
-# Base image avec le runtime ASP.NET Core 8.0
+# Utiliser l'image de base officielle de Microsoft pour ASP.NET Core
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 80
+EXPOSE 92
 
-# Image de construction avec le SDK .NET 8.0
+# Étape de build
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-
-# Copie et restauration des dépendances (packages NuGet)
-COPY ["RanchDuBonheur.csproj", "./"]
+# Copier le fichier csproj et restaurer les dépendances
+COPY RanchDuBonheur.csproj .
 RUN dotnet restore "RanchDuBonheur.csproj"
-
-# Copie du code source et construction du projet
+# Copier le reste des fichiers du projet
 COPY . .
 RUN dotnet build "RanchDuBonheur.csproj" -c Release -o /app/build
 
-# Publication du projet
+# Étape de publication
 FROM build AS publish
-RUN dotnet publish "RanchDuBonheur.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "RanchDuBonheur.csproj" -c Release -o /app/publish
 
-# Image finale avec l'application publiée
+# Étape finale
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
