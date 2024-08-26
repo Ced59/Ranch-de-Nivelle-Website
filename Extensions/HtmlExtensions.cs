@@ -27,11 +27,10 @@ namespace RanchDuBonheur.Extensions
 
             if (encoded.Length > length)
             {
-                encoded = encoded.Substring(0, length) + " ... (Cliquez pour voir plus)";  // Utilisez Substring pour conserver les premiers `length` caractères
+                encoded = encoded.Substring(0, length) + " ...";  // Utilisez Substring pour conserver les premiers `length` caractères
             }
 
             return new HtmlString(encoded);
         }
-
     }
 }

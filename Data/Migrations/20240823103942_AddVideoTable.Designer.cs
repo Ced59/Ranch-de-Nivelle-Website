@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RanchDuBonheur.Data;
 
@@ -11,9 +12,11 @@ using RanchDuBonheur.Data;
 namespace RanchDuBonheur.Data.Migrations
 {
     [DbContext(typeof(RanchDbContext))]
-    partial class RanchDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240823103942_AddVideoTable")]
+    partial class AddVideoTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

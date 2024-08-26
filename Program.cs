@@ -48,6 +48,7 @@ namespace RanchDuBonheur
             builder.Services.AddScoped<ImageProcessingService>();
             builder.Services.AddScoped<IPhotoService, PhotoService>();
             builder.Services.AddScoped<ILinkService, LinkService>();
+            builder.Services.AddHttpClient<IYoutubeService, YoutubeService>();
 
             var app = builder.Build();
 

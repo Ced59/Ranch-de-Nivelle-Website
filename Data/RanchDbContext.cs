@@ -12,6 +12,7 @@ namespace RanchDuBonheur.Data
         public DbSet<Meal> Meals { get; set; }
         public DbSet<MealDish> MealDishes { get; set; }
         public DbSet<MealArtist> MealArtists { get; set; }
+        public DbSet<Video> Videos { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -34,7 +35,7 @@ namespace RanchDuBonheur.Data
 
                 entity.Property(a => a.Description)
                     .HasMaxLength(7000)
-                    .HasColumnType("nvarchar(7000)");
+                    .HasColumnType("nvarchar(max)");
 
                 entity.Property(a => a.PhotoUrl)
                     .HasMaxLength(255)
@@ -46,6 +47,7 @@ namespace RanchDuBonheur.Data
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
+            // Configure Video entity
             builder.Entity<Video>(entity =>
             {
                 entity.ToTable("Videos");
@@ -62,7 +64,7 @@ namespace RanchDuBonheur.Data
 
                 entity.Property(v => v.Description)
                     .HasMaxLength(7000)
-                    .HasColumnType("nvarchar(7000)");
+                    .HasColumnType("nvarchar(max)");
 
                 entity.Property(v => v.YtLink)
                     .HasMaxLength(255)

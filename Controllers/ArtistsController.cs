@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
+using RanchDuBonheur.Models.Pocos.Artists;
 using RanchDuBonheur.Models.ViewModels;
+using RanchDuBonheur.Models.ViewModels.Shared;
 using RanchDuBonheur.Services.Interfaces;
 
 namespace RanchDuBonheur.Controllers
@@ -26,6 +28,7 @@ namespace RanchDuBonheur.Controllers
                 var today = DateOnly.FromDateTime(DateTime.Today);
 
                 var artist = await context.Artists
+                    .Include(a => a.Videos) 
                     .Include(a => a.MealArtists)
                     .ThenInclude(ma => ma.Meal)
                     .Where(a => a.Id == artistId)
@@ -39,7 +42,14 @@ namespace RanchDuBonheur.Controllers
                                 Date = ma.Meal.Date,
                                 Id = ma.Meal.Id
                             })
-                            .ToList()
+                            .ToList(),
+                        Videos = a.Videos.Select(v => new VideoInfo 
+                        {
+                            Id = v.Id,
+                            Title = v.Title,
+                            Description = v.Description,
+                            YtLink = v.YtLink
+                        }).ToList()
                     })
                     .SingleOrDefaultAsync();
 
@@ -61,6 +71,43 @@ namespace RanchDuBonheur.Controllers
 
             TempData["Error"] = "Requête invalide";
             return RedirectToAction("Index");
+        }
+
+
+        [Route("view-video/{videoId}")]
+        public async Task<IActionResult> ViewVideos(Guid videoId)
+        {
+            var videoWithArtist = await context.Videos
+                .Include(v => v.Artist)
+                .ThenInclude(a => a.Videos)
+                .FirstOrDefaultAsync(v => v.Id == videoId);
+
+            if (videoWithArtist == null || videoWithArtist.Artist == null)
+            {
+                TempData["Error"] = "Vidéo ou artiste non trouvé";
+                return RedirectToAction("Index");
+            }
+
+            var viewModel = new ArtistVideosViewModel
+            {
+                Artist = videoWithArtist.Artist,
+                Videos = videoWithArtist.Artist.Videos.Select(v => new VideoInfo
+                {
+                    Id = v.Id,
+                    Title = v.Title,
+                    Description = v.Description,
+                    YtLink = v.YtLink
+                }).ToList(),
+                IdSelectedVideo = videoId
+            };
+
+            var absoluteUri = linkService.BuildAbsoluteUri(HttpContext.Request);
+            ViewData["OG:Url"] = absoluteUri;
+            ViewData["FbShareUrl"] = linkService.BuildFacebookShareUrl(absoluteUri);
+            ViewData["OG:Image"] = "https://www.ranchdubonheur.fr" + viewModel.Artist.PhotoUrl;
+            ViewData["OG:Description"] = viewModel.Artist.Name + " : Ses vidéos";
+
+            return View(viewModel);
         }
 
     }

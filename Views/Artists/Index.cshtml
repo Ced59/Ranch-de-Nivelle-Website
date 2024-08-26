@@ -5,15 +5,37 @@
 @{
     ViewBag.Title = "Les Artistes du Ranch";
     Layout = "_Layout";
+    var francis = Model.FirstOrDefault(a => a.Name == "Francis du Ranch");
+    var otherArtists = Model.Where(a => a.Name != "Francis du Ranch").ToList();
 }
 
 <div class="container">
     <h1 class="my-4 text-center">Les artistes du Ranch</h1>
 
-    @if (Model.Count > 0)
+    @if (francis != null)
+    {
+        <div class="row row-cols-1 row-cols-md-4 g-4 justify-content-center">
+            <div class="col">
+                <div class="card h-100 shadow-sm border-3 rounded cards-color">
+                    <a asp-controller="Artists" asp-action="Artist" asp-route-id="@francis.Id" class="stretched-link text-decoration-none">
+                        @if (!string.IsNullOrWhiteSpace(francis.PhotoUrl))
+                        {
+                            <img src="@francis.PhotoUrl" class="card-img-top aspect-ratio aspect-16x9" alt="Image de l'artiste">
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title text-center text-card-color">@francis.Name</h5>
+                            <p class="card-text text-card-color justified-text">@Html.FormatMaxCharacters(francis.Description, 300)</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (otherArtists.Count > 0)
     {
         <div class="row row-cols-1 row-cols-md-4 g-4 mt-4">
-            @foreach (var artist in Model)
+            @foreach (var artist in otherArtists)
             {
                 <div class="col">
                     <div class="card h-100 shadow-sm border-3 rounded cards-color">
@@ -22,9 +44,9 @@
                             {
                                 <img src="@artist.PhotoUrl" class="card-img-top aspect-ratio aspect-16x9" alt="Image de l'artiste">
                             }
-                            <div class="card-body mt-3">
+                            <div class="card-body">
                                 <h5 class="card-title text-center text-card-color">@artist.Name</h5>
-                                <p class="card-text mt-4 text-card-color justified-text">@Html.FormatMaxCharacters(artist.Description, 300)</p>
+                                <p class="card-text text-card-color justified-text">@Html.FormatMaxCharacters(artist.Description, 300)</p>
                             </div>
                         </a>
                     </div>
@@ -32,12 +54,12 @@
             }
         </div>
     }
-    else
+    else if (francis == null)
     {
         <p class="mt-4">Aucun artiste n'est actuellement enregistré.</p>
     }
+    
 </div>
-
 @{
     var successMessage = TempData["Success"] as string;
     var errorMessage = TempData["Error"] as string;

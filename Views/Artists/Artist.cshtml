@@ -26,6 +26,8 @@
                     </div>
 
                     <div class="col-12 col-md-8 mx-auto">
+                        
+                        
                         @if (artist.Meals != null && artist.Meals.Any())
                         {
                             <table class="table mt-4">
@@ -56,24 +58,59 @@
                             <table class="table mt-4 custom-table">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th colspan="2" class="text-center">Pas de prestation prévue de @artist.Artist.Name pour le moment.</th>
+                                        <th colspan="2" class="text-center">Pas de prestation prévue de @artist.Artist.Name au Ranch pour le moment.</th>
                                     </tr>
                                 </thead>
                             </table>
                         }
+                        
+
+                        @if (artist.Videos != null && artist.Videos.Any())
+                        {
+                            <table class="table mt-5">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th colspan="3" class="text-center">Découvrez des vidéos de @artist.Artist.Name</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach (var video in artist.Videos)
+                                {
+                                    var videoId = video.YtLink.ExtractYouTubeVideoId();
+                                    <tr>
+                                        <td class="align-middle">
+                                            <img src="https://img.youtube.com/vi/@videoId/default.jpg" 
+                                                 alt="Thumbnail"
+                                                 class="img-fluid thumbnail-yt-image">
+                                        </td>
+                                        <td class="align-middle">
+                                            @video.Title
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <a asp-controller="Artists" asp-action="ViewVideos" asp-route-videoId="@video.Id" class="btn btn-primary">
+                                                Voir la vidéo
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+
+                        }
+
                     </div>
 
 
-                    <br />
-                    <hr />
+                        <br/>
+                        <hr/>
 
 
-                    <div class="text-center mt-2 mb-2">
-                        <a href="@facebookShareUrl" target="_blank" class="btn btn-social btn-facebook">
-                            <i class="bi bi-facebook"></i> Partager sur Facebook
-                        </a>
+                        <div class="text-center mt-2 mb-2">
+                            <a href="@facebookShareUrl" target="_blank" class="btn btn-social btn-facebook">
+                                <i class="bi bi-facebook"></i> Partager sur Facebook
+                            </a>
+                        </div>
                     </div>
-                </div>
             </div>
             <div class="text-center mt-4">
                 <a href="@Url.Action("Index", "Artists")" class="btn btn-primary">Retour</a>

@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using RanchDuBonheur.Data;
 using RanchDuBonheur.Models.Pocos.Artists;
 using RanchDuBonheur.Models.Pocos.Meals;
 using RanchDuBonheur.Models.ViewModels;
+using RanchDuBonheur.Services.Implementations;
 using RanchDuBonheur.Services.Interfaces;
 
 namespace RanchDuBonheur.Controllers
@@ -15,7 +17,8 @@ namespace RanchDuBonheur.Controllers
     public class AdminController(
         UserManager<IdentityUser> userManager,
         RanchDbContext context,
-        IPhotoService photoService)
+        IPhotoService photoService,
+        IYoutubeService youTubeService)
         : Controller
     {
         [Route("accueil")]
@@ -482,6 +485,59 @@ namespace RanchDuBonheur.Controllers
             return RedirectToAction("Artists");
         }
 
+        [HttpGet]
+        [HttpPost]
+        [Route("gestion-artist/{id}")]
+        public async Task<IActionResult> GestionArtist(Guid id)
+        {
+            var artist = await context.Artists
+                .Include(a => a.Videos) 
+                .FirstOrDefaultAsync(a => a.Id == id);
+
+            if (artist == null)
+            {
+                TempData["Error"] = "Artiste non trouvé.";
+                return RedirectToAction("Artists");
+            }
+
+            return View("ArtistGestion", artist);
+        }
+
+        [HttpPost]
+        [Route("delete-video-artist/{idVideo}")]
+        public async Task<IActionResult> DeleteVideoArtist(Guid idVideo, Guid idArtist)
+        {
+            var video = await context.Videos.FindAsync(idVideo);
+            context.Videos.Remove(video);
+            await context.SaveChangesAsync();
+
+            return RedirectToAction("GestionArtist", new { id = idArtist });
+        }
+
+        [HttpPost]
+        [Route("add-video-artist")]
+        public async Task<IActionResult> AddVideoArtist(string title, string description, string link, Guid idArtist)
+        {
+            if (!await youTubeService.IsVideoAvailable(link))
+            {
+                TempData["Error"] = "Le lien YouTube fourni n'est pas valide ou n'existe pas";
+                return RedirectToAction("GestionArtist", new { id = idArtist });
+            }
+
+            var video = new Video
+            {
+                ArtistId = idArtist,
+                Title = title,
+                Description = description,
+                YtLink = link
+            };
+
+            await context.Videos.AddAsync(video);
+            await context.SaveChangesAsync();
+
+            return RedirectToAction("GestionArtist", new { id = idArtist });
+        }
+
         [HttpPost]
         [Route("add-artist")]
         public async Task<IActionResult> AddArtist(string name, string description, IFormFile photo)
@@ -545,7 +601,5 @@ namespace RanchDuBonheur.Controllers
 
             return model;
         }
-
-
     }
 }
