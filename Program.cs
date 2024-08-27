@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
 using RanchDuBonheur.Init;
 using RanchDuBonheur.Services.Implementations;
 using RanchDuBonheur.Services.Interfaces;
+using RanchDuBonheur.Services.Interfaces.SiteMapServices;
 
 namespace RanchDuBonheur
 {
@@ -49,6 +51,19 @@ namespace RanchDuBonheur
             builder.Services.AddScoped<IPhotoService, PhotoService>();
             builder.Services.AddScoped<ILinkService, LinkService>();
             builder.Services.AddHttpClient<IYoutubeService, YoutubeService>();
+
+
+
+            // Enregistrement des services nécessaires
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddSingleton<IUrlHelperFactory, UrlHelperFactory>();
+
+            // Enregistrer les services de génération de sitemap
+            builder.Services.AddTransient<ISitemapGenerationService, SitemapGenerationService>();
+            builder.Services.AddTransient<ISitemapService, ArtistsSitemapService>();
+            builder.Services.AddTransient<ISitemapService, EventSitemapService>();
+
+
 
             var app = builder.Build();
 

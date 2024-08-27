@@ -7,6 +7,7 @@ using RanchDuBonheur.Models.Pocos.Artists;
 using RanchDuBonheur.Models.Pocos.Meals;
 using RanchDuBonheur.Models.ViewModels;
 using RanchDuBonheur.Services.Interfaces;
+using RanchDuBonheur.Services.Interfaces.SiteMapServices;
 
 namespace RanchDuBonheur.Controllers
 {
@@ -16,7 +17,8 @@ namespace RanchDuBonheur.Controllers
         UserManager<IdentityUser> userManager,
         RanchDbContext context,
         IPhotoService photoService,
-        IYoutubeService youTubeService)
+        IYoutubeService youTubeService,
+        ISitemapGenerationService sitemapGenerationService)
         : Controller
     {
         [Route("accueil")]
@@ -577,6 +579,17 @@ namespace RanchDuBonheur.Controllers
             }
 
             return RedirectToAction("Artists");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GenerateSitemap()
+        {
+            // Appel de l'action GenerateSitemap du SitemapController
+            var sitemap = await sitemapGenerationService.GenerateSitemapAsync();
+
+            // Redirigez vers la console d'administration après la génération
+            TempData["Success"] = "Le sitemap a été généré avec succès.";
+            return sitemap;
         }
 
         private async Task<AdminMealsGestionViewModel> RebuildViewModel(AdminMealsGestionViewModel model)
