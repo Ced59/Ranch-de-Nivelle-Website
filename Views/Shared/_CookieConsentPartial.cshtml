@@ -1,0 +1,33 @@
+﻿<div id="cookieConsent" style="display:none;">
+    <div id="cookieConsentContainer">
+        <p>
+            Nous utilisons des cookies pour vous garantir la meilleure expérience sur notre site. En continuant votre navigation, vous acceptez leur utilisation.
+            <a asp-controller="Home" asp-action="Privacy" target="_blank">En savoir plus</a>.
+            <button id="acceptCookies" class="cookieButton">OK</button>
+        </p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const cookieConsent = document.getElementById('cookieConsent');
+        const acceptCookiesButton = document.getElementById('acceptCookies');
+
+        if (!localStorage.getItem('cookieConsent')) {
+            cookieConsent.style.display = 'block';
+        }
+
+        acceptCookiesButton.addEventListener('click', function () {
+            localStorage.setItem('cookieConsent', 'true');
+            cookieConsent.style.display = 'none';
+
+            // Activez ici le code de suivi Matomo
+            _paq.push(['rememberConsentGiven']);
+        });
+
+        // Optionnel : code de suivi Matomo activé si consentement est déjà donné
+        if (localStorage.getItem('cookieConsent') === 'true') {
+            _paq.push(['rememberConsentGiven']);
+        }
+    });
+</script>
