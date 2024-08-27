@@ -9,8 +9,8 @@ public class YoutubeService(HttpClient httpClient) : IYoutubeService
         try
         {
             var response = await httpClient.GetAsync(url);
-            return response.IsSuccessStatusCode 
-                   && (response.RequestMessage.RequestUri.Host.Contains("youtube.com") 
+            return response.IsSuccessStatusCode
+                   && (response.RequestMessage.RequestUri.Host.Contains("youtube.com")
                        || response.RequestMessage.RequestUri.Host.Contains("youtu.be"));
         }
         catch

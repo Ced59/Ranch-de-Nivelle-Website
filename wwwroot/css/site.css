@@ -191,34 +191,34 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
 
 @media (max-width: 765px) {
     .card-img-top {
-        height: auto; /* Allow image to retain its original height */
+        height: auto;
     }
 }
 
 
 .toast {
-    background-color: #F0E4C7; /* Fond clair */
-    color: #593815; /* Texte marron */
-    border-left: 5px solid #8B572A; /* Bordure gauche épaisse et foncée */
+    background-color: #F0E4C7; 
+    color: #593815; 
+    border-left: 5px solid #8B572A; 
     font-family: 'Open Sans', sans-serif;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); /* Ombre similaire à celle des cartes */
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2); 
     opacity: 0.95;
 }
 
 .toast-header {
-    background-color: #8B572A; /* Arrière-plan marron pour l'entête */
-    color: #F7F6D5; /* Texte crème */
-    border-bottom: 1px solid #593815; /* Séparation */
-    font-family: 'Playfair Display', serif; /* Police pour les titres */
+    background-color: #8B572A;
+    color: #F7F6D5;
+    border-bottom: 1px solid #593815; 
+    font-family: 'Playfair Display', serif; 
 }
 
 .toast-body {
-    background-color: #FFF1D6; /* Fond très clair */
-    padding: 10px; /* Espacement interne */
+    background-color: #FFF1D6; 
+    padding: 10px; 
 }
 
 .btn-close {
-    filter: brightness(0) invert(1); /* Inverse les couleurs pour le bouton de fermeture */
+    filter: brightness(0) invert(1); 
 }
 
 .toast .btn-close:hover {
@@ -227,8 +227,8 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
 
 /* Styles globaux pour les modaux */
 .modal-content {
-    background-color: #F0E4C7; /* Couleur de fond pour tous les modaux */
-    color: #593815; /* Couleur de texte pour tous les modaux */
+    background-color: #F0E4C7; 
+    color: #593815; 
 }
 
 .modal-header, .modal-footer {
@@ -237,7 +237,7 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
 }
 
     .modal-header .btn-close {
-        filter: brightness(0) invert(1); /* Assure que le bouton de fermeture est visible */
+        filter: brightness(0) invert(1); 
     }
 
 .modal-title {
@@ -245,7 +245,7 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
 }
 
 .modal-body {
-    color: #593815; /* Assure que le texte dans le corps du modal est visible et cohérent */
+    color: #593815; 
 }
 
 .modal-footer .btn-primary {
@@ -270,7 +270,7 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
     }
 
 .modal-footer .btn {
-    border-radius: 0; /* Style optionnel pour donner aux boutons un look plus net */
+    border-radius: 0; 
 }
 
 .artist-image-container {
@@ -346,7 +346,7 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
 .responsive-iframe-container {
     position: relative;
     overflow: hidden;
-    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    padding-top: 56.25%; 
 }
 
     .responsive-iframe-container iframe {
@@ -368,8 +368,8 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: #8B572A; /* Marron foncé pour correspondre à la navbar */
-    color: #F7F6D5; /* Texte crème pour une bonne lisibilité */
+    background-color: #8B572A; 
+    color: #F7F6D5; 
     text-align: center;
     padding: 15px;
     z-index: 9999;
@@ -383,8 +383,8 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
 }
 
 .cookieButton {
-    background-color: #28A745; /* Vert pour attirer l'attention et inciter à cliquer */
-    color: #FFF1D6; /* Texte crème pour le bouton */
+    background-color: #28A745; 
+    color: #FFF1D6; 
     border: none;
     padding: 8px 15px;
     margin-left: 15px;
@@ -394,6 +394,6 @@ footer .bi, footer .bi:hover, footer .bi:focus, footer .bi:active {
 }
 
     .cookieButton:hover {
-        background-color: #21783A; /* Assombrir le vert au survol pour un effet de clic */
+        background-color: #21783A; 
         color: #F7F6D5;
     }

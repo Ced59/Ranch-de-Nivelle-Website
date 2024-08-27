@@ -1,12 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
-using RanchDuBonheur.Models.Pocos.Artists;
-using RanchDuBonheur.Services.Implementations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using RanchDuBonheur.Extensions;
 using RanchDuBonheur.Services.Interfaces;
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RanchDuBonheur.Models;
-using System.Diagnostics;
 using RanchDuBonheur.Services.Interfaces;
+using System.Diagnostics;
 
 namespace RanchDuBonheur.Controllers
 {

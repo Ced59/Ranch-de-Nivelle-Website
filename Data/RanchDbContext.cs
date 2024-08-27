@@ -42,8 +42,8 @@ namespace RanchDuBonheur.Data
                     .HasColumnType("nvarchar(255)");
 
                 entity.HasMany(a => a.Videos)
-                    .WithOne(v => v.Artist) 
-                    .HasForeignKey(v => v.ArtistId) 
+                    .WithOne(v => v.Artist)
+                    .HasForeignKey(v => v.ArtistId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 

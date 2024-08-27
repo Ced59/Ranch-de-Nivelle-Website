@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
-using RanchDuBonheur.Models.Pocos.Artists;
 using RanchDuBonheur.Models.ViewModels;
 using RanchDuBonheur.Models.ViewModels.Shared;
 using RanchDuBonheur.Services.Interfaces;
@@ -28,7 +27,7 @@ namespace RanchDuBonheur.Controllers
                 var today = DateOnly.FromDateTime(DateTime.Today);
 
                 var artist = await context.Artists
-                    .Include(a => a.Videos) 
+                    .Include(a => a.Videos)
                     .Include(a => a.MealArtists)
                     .ThenInclude(ma => ma.Meal)
                     .Where(a => a.Id == artistId)
@@ -43,7 +42,7 @@ namespace RanchDuBonheur.Controllers
                                 Id = ma.Meal.Id
                             })
                             .ToList(),
-                        Videos = a.Videos.Select(v => new VideoInfo 
+                        Videos = a.Videos.Select(v => new VideoInfo
                         {
                             Id = v.Id,
                             Title = v.Title,

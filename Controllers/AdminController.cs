@@ -2,12 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 using RanchDuBonheur.Data;
 using RanchDuBonheur.Models.Pocos.Artists;
 using RanchDuBonheur.Models.Pocos.Meals;
 using RanchDuBonheur.Models.ViewModels;
-using RanchDuBonheur.Services.Implementations;
 using RanchDuBonheur.Services.Interfaces;
 
 namespace RanchDuBonheur.Controllers
@@ -491,7 +489,7 @@ namespace RanchDuBonheur.Controllers
         public async Task<IActionResult> GestionArtist(Guid id)
         {
             var artist = await context.Artists
-                .Include(a => a.Videos) 
+                .Include(a => a.Videos)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
             if (artist == null)
