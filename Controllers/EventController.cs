@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Elfie.Serialization;
 using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
 using RanchDuBonheur.Extensions;
+using RanchDuBonheur.Models.Pocos.Meals;
 using RanchDuBonheur.Services.Interfaces;
 
 namespace RanchDuBonheur.Controllers
@@ -18,7 +20,11 @@ namespace RanchDuBonheur.Controllers
                 .ThenInclude(ma => ma.Artist)
                 .Where(m => showPast ? m.Date < today : m.Date >= today)
                 .OrderBy(m => m.Date)
-                .ToListAsync();
+            .ToListAsync();
+
+            ViewData["MetaDescription"] = "Liste des repas du Ranch du bonheur à Nivelle";
+            var absoluteUri = linkService.BuildAbsoluteUri(HttpContext.Request);
+            ViewData["CanonicalUrl"] = absoluteUri;
 
             return View(new Tuple<List<RanchDuBonheur.Models.Pocos.Meals.Meal>, bool>(meals, showPast));
         }
@@ -40,6 +46,8 @@ namespace RanchDuBonheur.Controllers
                 ViewData["FbShareUrl"] = linkService.BuildFacebookShareUrl(absoluteUri);
                 ViewData["OG:Image"] = "https://www.ranchdubonheur.fr" + meal.MealArtists.ToList()[0].Artist.PhotoUrl;
                 ViewData["OG:Description"] = "Voir le repas du " + meal.Date.GetCapitalizedDate() + " au Ranch du bonheur à Nivelle";
+                ViewData["MetaDescription"] = "Repas du " + meal.Date.GetCapitalizedDate() + " au Ranch du bonheur à Nivelle";
+                ViewData["CanonicalUrl"] = absoluteUri;
 
                 return View(meal);
             }

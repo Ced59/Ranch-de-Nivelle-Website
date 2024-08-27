@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RanchDuBonheur.Data;
+using RanchDuBonheur.Models.Pocos.Artists;
 using RanchDuBonheur.Models.ViewModels;
 using RanchDuBonheur.Models.ViewModels.Shared;
 using RanchDuBonheur.Services.Interfaces;
@@ -14,6 +15,10 @@ namespace RanchDuBonheur.Controllers
         public async Task<IActionResult> Index()
         {
             var artists = await context.Artists.ToListAsync();
+
+            ViewData["MetaDescription"] = "Liste des artistes du Ranch du Bonheur à Nivelle";
+            var absoluteUri = linkService.BuildAbsoluteUri(HttpContext.Request);
+            ViewData["CanonicalUrl"] = absoluteUri;
 
             return View(artists);
         }
@@ -64,6 +69,8 @@ namespace RanchDuBonheur.Controllers
                 ViewData["FbShareUrl"] = linkService.BuildFacebookShareUrl(absoluteUri);
                 ViewData["OG:Image"] = "https://www.ranchdubonheur.fr" + artist.Artist.PhotoUrl;
                 ViewData["OG:Description"] = artist.Artist.Name + " : Un artiste du Ranch du Bonheur";
+                ViewData["MetaDescription"] = artist.Artist.Description;
+                ViewData["CanonicalUrl"] = absoluteUri;
 
                 return View(artist);
             }
@@ -105,6 +112,8 @@ namespace RanchDuBonheur.Controllers
             ViewData["FbShareUrl"] = linkService.BuildFacebookShareUrl(absoluteUri);
             ViewData["OG:Image"] = "https://www.ranchdubonheur.fr" + viewModel.Artist.PhotoUrl;
             ViewData["OG:Description"] = viewModel.Artist.Name + " : Ses vidéos";
+            ViewData["MetaDescription"] = videoWithArtist.Description;
+            ViewData["CanonicalUrl"] = absoluteUri;
 
             return View(viewModel);
         }

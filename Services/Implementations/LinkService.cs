@@ -6,14 +6,23 @@ public class LinkService : ILinkService
 {
     public string BuildAbsoluteUri(HttpRequest request)
     {
+        var scheme = "https"; // Force HTTPS
+        var host = request.Host.Host;
+
+        if (!host.StartsWith("www."))
+        {
+            host = "www." + host;
+        }
+
         return string.Concat(
-            request.Scheme,
+            scheme,
             "://",
-            request.Host.ToUriComponent(),
+            host,
             request.PathBase.ToUriComponent(),
             request.Path.ToUriComponent(),
             request.QueryString.ToUriComponent());
     }
+
 
     public string BuildFacebookShareUrl(string abloluteUri)
     {

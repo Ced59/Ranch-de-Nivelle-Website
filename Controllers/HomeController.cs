@@ -16,12 +16,20 @@ namespace RanchDuBonheur.Controllers
             ViewData["FbShareUrl"] = linkService.BuildFacebookShareUrl(absoluteUri);
             ViewData["OG:Image"] = "https://www.ranchdubonheur.fr/images/home/PHOTO-LA-LOUVIERE-FRANCIS-FROISART.jpg";
             ViewData["OG:Description"] = "Accueil du site du Ranch du Bonheur";
+            ViewData["MetaDescription"] =
+                "Bienvenue au Ranch du Bonheur de Nivelle, un lieu où le bonheur se savoure à toute heure.";
+            ViewData["CanonicalUrl"] = absoluteUri;
 
             return View();
         }
 
         public IActionResult Privacy()
         {
+            var absoluteUri = linkService.BuildAbsoluteUri(HttpContext.Request);
+            ViewData["MetaDescription"] =
+                "Charte de confidentialité du site www.ranchdubonheur.fr";
+            ViewData["CanonicalUrl"] = absoluteUri;
+
             return View();
         }
 
