@@ -20,7 +20,7 @@ namespace RanchDuBonheur.Controllers
                 .ThenInclude(ma => ma.Artist)
                 .Where(m => showPast ? m.Date < today : m.Date >= today)
                 .OrderBy(m => m.Date)
-            .ToListAsync();
+                .ToListAsync();
 
             ViewData["MetaDescription"] = "Liste des repas du Ranch du bonheur à Nivelle";
             var absoluteUri = linkService.BuildAbsoluteUri(HttpContext.Request);
@@ -38,14 +38,14 @@ namespace RanchDuBonheur.Controllers
                     .ThenInclude(md => md.Dish)
                     .Include(m => m.MealArtists)
                     .ThenInclude(ma => ma.Artist)
-                .Where(m => m.Id == idEventGuid)
+                    .Where(m => m.Id == idEventGuid)
                     .FirstOrDefaultAsync();
 
                 var absoluteUri = linkService.BuildAbsoluteUri(HttpContext.Request);
                 ViewData["OG:Url"] = absoluteUri;
                 ViewData["FbShareUrl"] = linkService.BuildFacebookShareUrl(absoluteUri);
                 ViewData["OG:Image"] = "https://www.ranchdubonheur.fr" + meal.MealArtists.ToList()[0].Artist.PhotoUrl;
-                ViewData["OG:Description"] = "Voir le repas du " + meal.Date.GetCapitalizedDate() + " au Ranch du bonheur à Nivelle";
+                ViewData["OG:Description"] = "Cliquez ici pour découvrir le repas du " + meal.Date.GetCapitalizedDate() + " au Ranch du bonheur à Nivelle";
                 ViewData["MetaDescription"] = "Repas du " + meal.Date.GetCapitalizedDate() + " au Ranch du bonheur à Nivelle";
                 ViewData["CanonicalUrl"] = absoluteUri;
 

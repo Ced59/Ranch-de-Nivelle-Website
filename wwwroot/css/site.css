@@ -22,7 +22,7 @@ body {
 /* Navbar Styles */
 header, .navbar {
     background-color: #8B572A;
-    color: #F7F6D5;
+    color: #f5f5dc;
 }
 
 .navbar-brand img {
@@ -52,8 +52,8 @@ header, .navbar {
 
 .navbar .nav-link {
     font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    color: #593815;
+    font-size: 24px;
+    color: #f5f5dc;
     transition: color 0.3s, background-color 0.3s;
     text-decoration: none;
     position: relative;
@@ -61,7 +61,7 @@ header, .navbar {
 }
 
     .navbar .nav-link:hover, .nav-link:focus {
-        color: #FFF1D6;
+        color: #f5f5dc;
         background-color: rgba(255, 241, 214, 0.5);
         padding: 5px 10px;
         border-radius: 5px;

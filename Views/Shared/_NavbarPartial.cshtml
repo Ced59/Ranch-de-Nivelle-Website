@@ -11,13 +11,13 @@
         <div class="navbar-collapse collapse d-lg-inline-flex justify-content-between">
             <ul class="navbar-nav flex-grow-1">
                 <li class="nav-item m-2">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Accueil</a>
                 </li>
                 <li class="nav-item m-2">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Event" asp-action="Index">Dates & Menus</a>
+                    <a class="nav-link" asp-area="" asp-controller="Event" asp-action="Index">Dates & Menus</a>
                 </li>
                 <li class="nav-item m-2">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Artists" asp-action="Index">Les Artistes</a>
+                    <a class="nav-link" asp-area="" asp-controller="Artists" asp-action="Index">Les Artistes</a>
                 </li>
                 @* <li class="nav-item m-2">
                     <a class="nav-link text-dark" asp-area="" asp-controller="Salle" asp-action="Index">La Salle</a>
@@ -28,7 +28,7 @@
                 @if (User!.Identity!.IsAuthenticated)
                 {
                     <li class="nav-item m-2">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Admin" asp-action="AdminIndex">Administration</a>
+                        <a class="nav-link" asp-area="" asp-controller="Admin" asp-action="AdminIndex">Administration</a>
                     </li>
                 }
             </ul>
