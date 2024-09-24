@@ -46,7 +46,7 @@ namespace RanchDuBonheur.Controllers
                 ViewData["FbShareUrl"] = linkService.BuildFacebookShareUrl(absoluteUri);
                 ViewData["OG:Image"] = "https://www.ranchdubonheur.fr" + meal.MealArtists.ToList()[0].Artist.PhotoUrl;
                 ViewData["OG:Description"] = "Cliquez ici pour découvrir le repas du " + meal.Date.GetCapitalizedDate() + " au Ranch du bonheur à Nivelle";
-                ViewData["MetaDescription"] = "Repas du " + meal.Date.GetCapitalizedDate() + " au Ranch du bonheur à Nivelle";
+                ViewData["MetaDescription"] = "Cliquez ici pour découvrir le repas du " + meal.Date.GetCapitalizedDate() + " au Ranch du bonheur à Nivelle";
                 ViewData["CanonicalUrl"] = absoluteUri;
 
                 return View(meal);
